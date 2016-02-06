@@ -23,8 +23,11 @@ int main(int argc, char * argv[])
 
 	net.buildNet(prm);
 
-	net.propogatePerceptrons(csv_data);		
-
+	for(int i = 0; i < csv_data.size(); i++)
+	{	
+		net.propogatePerceptrons(prm, csv_data, i);		
+	}
+	
 	return 0;
 }
 

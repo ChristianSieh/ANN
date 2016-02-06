@@ -26,5 +26,6 @@ Perceptron::~Perceptron(void)
 Perceptron::void ActivationFunction(vector<float> previous_outputs, int node)
 {
 	//Look at the weights of each output to calculate the Sum(Wij * Yij)
+	//1 / (1-e^-x)
 }
 
