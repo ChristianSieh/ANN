@@ -23,10 +23,7 @@ int main(int argc, char * argv[])
 
 	net.buildNet(prm);
 
-	for(int i = 0; i < csv_data.size(); i++)
-	{	
-		net.propogatePerceptrons(prm, csv_data, i);		
-	}
+	net.crossValidate();
 	
 	return 0;
 }
