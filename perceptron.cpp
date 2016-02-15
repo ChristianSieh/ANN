@@ -1,4 +1,5 @@
 #include <vector>
+#include "perceptron.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ Perceptron::~Perceptron(void)
 * Parameters:	previous_outputs - Contains all outputs from the previous layer
 *				node - This perceptrons position in the current layer
 ******************************************************************************/
-Perceptron::void ActivationFunction(vector<float> previous_outputs, int node)
+void Perceptron::ActivationFunction(vector<float> previous_outputs, int node)
 {
 	//Look at the weights of each output to calculate the Sum(Wij * Yij)
 	//1 / (1-e^-x)

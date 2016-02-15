@@ -4,7 +4,6 @@
 #include <cstring>
 #include <string>
 #include <vector>
-#include "prmFile.h"
 #include "csvparse.h"
 #include "neuralnet.h"
 
@@ -23,7 +22,7 @@ int main(int argc, char * argv[])
 
 	net.buildNet(prm);
 
-	net.trainNet(prm, csv_data)
+	net.trainNet(prm, csv_data);
 	
 	return 0;
 }

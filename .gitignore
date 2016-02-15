@@ -1,0 +1,7 @@
+*.o
+*.gch
+*.swp
+*~
+ANNtest
+ANNtrain
+CrossValidate

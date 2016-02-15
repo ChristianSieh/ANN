@@ -35,5 +35,6 @@ struct PDSI
 
 vector<PDSI> parseCSV(const char * filename);
 void setParam(PDSI & tmp, double n, int index);
+void normalizePDSI(vector<PDSI> & csvData);
 
 #endif
