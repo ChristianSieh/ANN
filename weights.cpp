@@ -1,8 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <math.h>
-#include <stdlib.h>
+#include "weights.h"
 
 using namespace std;
 
