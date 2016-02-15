@@ -27,8 +27,57 @@ vector<PDSI> parseCSV(const char * filename)
 		}
 	}
 
+	normalizePDSI(csvData);
 
 	return csvData;
+}
+
+void normalizePDSI(vector<PDSI> & csvData)
+{
+	//Find max and min acres burned
+	double min_acres = 2147483647;
+	double max_acres = -1; //max int
+	//Find max and min drought index values
+	double min_pdsi = 100;	// These values only have a range from -10 to 10
+	double max_pdsi = -100;
+	for(int i = 0; i < csvData.size(); i++)
+	{
+		if(csvData[i].AcresBurned < min_acres)
+			min_acres = csvData[i].AcresBurned;
+
+		else if(csvData[i].AcresBurned > max_acres)
+			max_acres = csvData[i].AcresBurned;
+
+		//Now run through the 12 months of pdsi data and see if the years
+		//min/max pdsi is a global min/max
+		double local_min = 100;
+		double local_max = -100;
+		for(int j = 0; j < 12; j++)
+		{
+			if(csvData[i].DroughtIndex[j] < local_min)
+				local_min = csvData[i].DroughtIndex[j];
+
+			else if(csvData[i].DroughtIndex[j] > local_max)
+				local_max = csvData[i].DroughtIndex[j];
+		}
+		if(local_min < min_pdsi)
+			min_pdsi = local_min;
+
+		if(local_max > max_pdsi)
+			max_pdsi = local_max;
+		
+	}
+
+	// Now we have the min/max from the entire dataset
+	for(int i = 0; i < csvData.size(); i++)
+	{
+		csvData[i].AcresBurned = (csvData[i].AcresBurned - min_acres) / (max_acres - min_acres);
+		
+		for(int j = 0; j < 12; j++)
+		{
+			csvData[i].DroughtIndex[j] = (csvData[i].DroughtIndex[j] - min_pdsi) / (max_pdsi - min_pdsi);
+		}
+	}
 }
 
 void setParam(PDSI & tmp, double n, int index)
