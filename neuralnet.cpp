@@ -1,23 +1,22 @@
 #include "neuralnet.h"
-#include "perceptron.h"
 
 using namespace std;
 
-neuralNet::net(void)
+neuralNet::neuralNet(void)
 {
 };
 
-neuralNet::~net(void)
+neuralNet::~neuralNet(void)
 {
 };
 
 void neuralNet::buildNet(prmFile prm)
 {
-	for(int i = 0; i < prm.layers.size(); i++)
+	for(int i = 0; i < prm.layers; i++)
 	{
 		vector<Perceptron> layer;
 
-		for(int j = 0; j < prm.nodesPerLayer[i].size(); j++)
+		for(int j = 0; j < prm.nodesPerLayer[i]; j++)
 		{
 			Perceptron per;
 			layer.push_back(per);		
@@ -49,27 +48,37 @@ vector<float> neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI> csv_data
 	return previousOutputs;
 }
 
-void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data, int yearIndex)
+void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 {
-	vector<int> randomIndex;
+	int i = 0;
+	float error = prm.threshold + 1;
+	float errorDifference;//TODO
 
-	for(int i = 0; i < csv_data.size(); i++)
+	while(i < prm.epochs && error > prm.threshold)
 	{
-		randomIndex.push_back(i);
-	}
+		vector<int> randomIndex;
 
-	random_shuffle(randomIndex.begin(), randomIndex.end());
+		for(int j = 0; j < csv_data.size(); j++)
+		{
+			randomIndex.push_back(j);
+		}
 
-	for(int i = 0; i < randomIndex.size(); i++)
-	{
-		vector<float> results = propogatePerceptrons(prm, csv_data, randomIndex[i]);
+		random_shuffle(randomIndex.begin(), randomIndex.end());
+
+		for(int j = 0; j < randomIndex.size(); j++)
+		{
+			vector<float> results = propogatePerceptrons(prm, csv_data, randomIndex[j]);
+				
+			//Delta learning rule
+			//wij^t+1 = wij^t (ada)yi(delta)j
+			//Need to get delta
+			//Adjust weights
+			//Run Again
 			
-		//Delta learning rule
-		//wij^t+1 = wij^t (ada)yi(delta)j
-		//Need to get delta
-		//Adjust weights
-		//Run Again
-		
+			
+		}
+
+		i++;
 	}
 }
 
@@ -78,21 +87,29 @@ void neuralNet::testNet()
 
 }
 
-vector<float> neuralnet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIndex)
+void neuralNet::crossValidate()
 {
+
+}
+
+
+vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIndex)
+{
+	//TODO: Check size of input vector and if to small then ignore that year	
+
 	vector<float> inputs;
 
 	for(int i = yearIndex; i > yearIndex - prm.yearsBurned && i >= 0; i--)
 	{
-		inputs.push_back(csv_data[yearIndex - i);
+		inputs.push_back(csv_data[yearIndex - i].AcresBurned);
 	}		
 	
 	int monthsPushed = 0;
 	int monthIndex = prm.endYear;
 
-	while(monthsPushed < monthsPDSI && yearIndex >= 0)
+	while(monthsPushed < prm.monthsPDSI && yearIndex >= 0)
 	{
-		inputs.push_back(csv_data[yearIndex].DroughtIndex[monthIndex];
+		inputs.push_back(csv_data[yearIndex].DroughtIndex[monthIndex]);
 	
 		if(monthIndex = 0)
 		{
@@ -102,4 +119,18 @@ vector<float> neuralnet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 		monthIndex = (monthIndex - 1) % 12;				
 		monthsPushed++;
 	}
+}
+
+float neuralNet::calculateError(vector<float> results)
+{
+	float error = 0;
+
+	for( int i = 0; i < results.size(); i++)
+	{
+		//error += d[i] - results[i];	
+	}
+
+	error = error / results.size();
+
+	return error;
 }

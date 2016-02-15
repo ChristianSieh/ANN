@@ -7,4 +7,4 @@ using namespace std;
 
 bool ReadWeightsFromFile(string weightsFile, double* &weightArray);
 
-bool WriteWeightsToFile(string weightsFIle, double* & &weightArray, int inOut[]);
+bool WriteWeightsToFile(string weightsFIle, double* &weightArray, int inOut[]);
