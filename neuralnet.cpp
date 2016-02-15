@@ -95,6 +95,8 @@ void neuralNet::crossValidate()
 
 vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIndex)
 {
+	//TODO: Check size of input vector and if to small then ignore that year	
+
 	vector<float> inputs;
 
 	for(int i = yearIndex; i > yearIndex - prm.yearsBurned && i >= 0; i--)
