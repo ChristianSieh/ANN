@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <math.h>
+#include <stdlib.h>
+
 using namespace std;
 
 bool ReadWeightsFromFile(string weightsFile, int* &weightArray)
@@ -31,16 +33,17 @@ bool ReadWeightsFromFile(string weightsFile, int* &weightArray)
       {
         space = line.find_first_of(" ");
         for(int k = space - 1; k >= 0; k--)
-				{
+	{
           power++;
-					weightArray[j+(i*outputs)] += (line[k] - 48)*pow(10,power);
-				}
+          cout << "line[k]: " <<  line[k] << endl;
+	  weightArray[j+(i*outputs)] += atoi(line[k]) * pow(10,power);
+	}
         power = -1;
 
-			  line.erase(0, space + 1);
+	line.erase(0, space + 1);
 
-				if(space == -1)
-				{
+	if(space == -1)
+	{
           for(int m = line.length() - 1; m >= 0; m--)
           {
             power++;
@@ -55,9 +58,9 @@ bool ReadWeightsFromFile(string weightsFile, int* &weightArray)
           }
           power = -1;
           break;
-				}
-				
-				j = 0;
+	}
+		
+	j = 0;
         if(line.length() == 1)
         {
           weightArray[j+(i*outputs)+1] = line[0] - 48;
@@ -78,3 +81,4 @@ bool ReadWeightsFromFile(string weightsFile, int* &weightArray)
   }
   return true;
 }
+
