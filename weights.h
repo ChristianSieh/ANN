@@ -3,8 +3,8 @@
 #include <string>
 #include <math.h>
 
-using namespace std;:q
+using namespace std;
 
-bool ReadWeightsFromFile(string weightsFile, int* &weightArray);
+bool ReadWeightsFromFile(string weightsFile, double* &weightArray);
 
-bool WriteWeightsToFile(string weightsFIle, int* & &weightArray, int inOut[2]);
+bool WriteWeightsToFile(string weightsFIle, double* & &weightArray, int inOut[]);
