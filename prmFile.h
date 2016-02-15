@@ -1,3 +1,6 @@
+#ifndef _PRMFILE_H
+#define _PRMFILE_H
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -27,3 +30,5 @@ class prmFile
 		~prmFile();
 		void parsePrm(string prmFileName);
 };
+
+#endif

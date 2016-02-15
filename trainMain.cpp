@@ -6,6 +6,7 @@
 #include <vector>
 #include "csvparse.h"
 #include "neuralnet.h"
+#include "prmFile.h"
 
 using namespace std;
 
