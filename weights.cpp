@@ -8,38 +8,56 @@ bool ReadWeightsFromFile(string weightsFile, double* &weightArray)
   int inputs = 0;
   int outputs = 0;
   string line;
-  int totalWeights;
+  int totalWeights = 0;
+  double* oldweights;
 
   weights.open(weightsFile.c_str());
 
   if(weights.is_open())
   {
     cout << "Reading from the generate weights file." << endl;
-    weights >> inputs >> outputs;
-    totalWeights = inputs*outputs;
-    cout << "inputs: " << inputs << " outputs: " << outputs << endl;
-    weights.ignore();
-    weightArray = new (nothrow) double[totalWeights]();
-
-    for(int i = 0; i < inputs * outputs; i++)
-    {
-      weights >> line;
-      cout << "Line: " << line << endl;
-      weightArray[i] = stod(line); 
-    }
-
-    if(weights >> inputs >> outputs)
-    {
-      cout << "more in file" << endl;
-    }
     
-    else
-      cout << "no more in file" << endl;
-
-    for(int l = 0; l < inputs*outputs; l++)
+    while(weights >> inputs >> outputs)
     {
-      cout << "l: " << l << " weightArray[l]: " <<  weightArray[l] << endl;
-    }
+      totalWeights += inputs*outputs;
+      cout << "inputs: " << inputs << " outputs: " << outputs << endl;
+      weights.ignore();
+      
+      if(!firsttime)
+      {
+        delete [] weightArray;
+        weightArray = new(nothrow) double[totalWeights]();
+        for(int k = 0; k < totalWeights; k++)
+        {
+          weightArray[k] = oldWeights[k];
+        }
+        for(int i = 0; i < inputs*outputs; i++)
+        {
+          weights >> line;
+          weightArray[(totalWeights - (inputs * outputs))] = stod(line);
+        }
+      }
+
+      else
+      {
+        weightArray = new(nothrow) double[totalWeights]();
+        oldWeights = new(nothrow) double[totalWeights]();
+        for(int i = 0; i < inputs * outputs; i++)
+        {
+          weights >> line;
+          weightArray[i] = stod(line);
+        }
+      }
+
+      delete [] oldWeights;
+      oldWeights = new(nothrow) double[totalWeights]();
+      for(int j = 0; j < totalWeights; j++)
+      {
+        oldWeights[j] = weightArray[j];
+      }
+      firsttime = false;
+    } 
+    delete [] oldWeights;
   }
   else
   {
