@@ -2,7 +2,28 @@
 
 using namespace std;
 
-bool ReadWeightsFromFile(string weightsFile, double* &weightArray)
+void WeightsSetUp(string weightsFileName, float learningRate, float momentum, vector<int> nodesPerLayer, double* &weightArray)
+{
+  ifstream test;
+  test.open(weightsFileName.c_str());
+
+  if(test.is_open())
+  {
+    test.close();
+    ReadWeightsFromFile(weightsFileName, weightArray);
+  }
+  else
+  {
+    CreateWeights(weightsFileName, weightArray);
+  }
+}
+
+void CreateWeights(string weightsFileName, double* &weightArray, vector<int> nodesPerLayer)
+{
+  
+}
+
+bool ReadWeightsFromFile(string weightsFileName, double* &weightArray)
 {
   ifstream weights;
   int inputs = 0;
@@ -11,7 +32,7 @@ bool ReadWeightsFromFile(string weightsFile, double* &weightArray)
   int totalWeights = 0;
   double* oldweights;
 
-  weights.open(weightsFile.c_str());
+  weights.open(weightsFileName.c_str());
 
   if(weights.is_open())
   {
@@ -20,8 +41,6 @@ bool ReadWeightsFromFile(string weightsFile, double* &weightArray)
     while(weights >> inputs >> outputs)
     {
       totalWeights += inputs*outputs;
-      cout << "inputs: " << inputs << " outputs: " << outputs << endl;
-      weights.ignore();
       
       if(!firsttime)
       {
@@ -34,7 +53,7 @@ bool ReadWeightsFromFile(string weightsFile, double* &weightArray)
         for(int i = 0; i < inputs*outputs; i++)
         {
           weights >> line;
-          weightArray[(totalWeights - (inputs * outputs))] = stod(line);
+          weightArray[(totalWeights - ((inputs * outputs)-1))] = stod(line);
         }
       }
 
@@ -68,38 +87,42 @@ bool ReadWeightsFromFile(string weightsFile, double* &weightArray)
   return true;
 }
 
-bool WriteWeightsToFile(string weightsFile, double* &weightArray, int inOut[])
+bool WriteWeightsToFile(string weightsFileName, double* &weightArray, vector<int> nodesPerLayer)
 {
-  //int inOut[0] = number of input nodes.
-  //int inOut[1] = number of output nodes.
+  //int nodesPerLayer[0] = number of input nodes.
+  //int nodesPerLayer[1] = number of output nodes.
   ofstream weights;
-  weights.open(weightsFile.c_str());
+  int loops = 0; 
+  weights.open(weightsFileName.c_str());
 
   if(weights.is_open())
   {
     cout << "Writing to the generated weights file." << endl;
-    weights << inOut[0] << " " << inOut[1] << endl;
-
-    for(int i = 0; i < inOut[0]; i++)
+    while(loops < nodesPerLayer.size())
     {
-      for(int j = 0; j < inOut[1] - 1; j++)
+      weights << nodesPerLayer[loops] << " " << nodesPerLayer[loops+1] << endl;
+
+      for(int i = 0; i < nodesPerLayer[loops]; i++)
       {
-        weights << weightArray[j+(i*inOut[1])] << " ";
+        for(int j = 0; j < nodesPerLayer[loops+1] - 1; j++)
+        {
+          if(loops < 2)
+          {
+            weights << weightArray[j+(i*nodesPerLayer[loops+1])] << " ";
+          }
+          else
+          {
+            weights << weightArray[(nodesPerLayer[loops-2] * nodesPerLayer[loops-1]) + j + (i*nodesPerLayer[loops+1])] << " ";
+          }
+        }
+        weights << endl;
       }
-      weights << weightArray[inOut[1]+(i*inOut[1])] << endl;
+
+      loops +=2;
+      weights << endl;
     }
-
-    for(int l = 0; l < inOut[0]*inOut[1]; l++)
-		{
-			cout << "l: " << l << " weightArray[l]: " <<  weightArray[l] << endl;
-		}
-		delete[] weightArray;
   }
 
-  for(int n = 0; n < inOut[0]*inOut[1]; n++)
-  {
-    cout << "n: " << n << " weightArray[n]: " <<  weightArray[n] << endl;
-  }
-
+  delete [] weightArray;
   return true;
 }
