@@ -20,7 +20,57 @@ void WeightsSetUp(string weightsFileName, float learningRate, float momentum, ve
 
 void CreateWeights(string weightsFileName, double* &weightArray, vector<int> nodesPerLayer)
 {
+  ofstream weights;
+  int layers = nodesPerLayer.size();
+  int totalNodes = 0;
+  int totalNodesInCurrentLayer = 0;
+  double randomValue = 0;
   
+  weights.open(weightsFileName);
+  
+  if(weights.is_open())
+  {
+	  srand(time(NULL));
+	  if(layers > 1)
+	  {
+		  for(int i = 0; i < layers-1; i++)
+		  {
+			  totalNodes += nodesPerLayer[i] * nodesPerLayer[i+1];
+		  }
+		  weightArray = new(nothrow) double[totalNodes]();
+		  for(int j = 0; j < totalNodes; j++)
+		  {
+			  randomValue = rand() % 20;
+			  randomValue /= 10.00;
+			  randomValue -= 1;
+			  weightArray[j] = randomValue;
+		  }
+		  for(int i = 0; i < layers-1; i++)
+		  {
+			  weights << nodesPerLayer[i] << " " << nodesPerLayer[i+1] << endl;
+			  totalNodesInCurrentLayer = nodesPerLayer[i] * nodesPerLayer[i+1];
+			  for(int j = 0; j < totalNodesInCurrentLayer; j++)
+			  {
+				  weights << weightArray[j + (i * totalNodesInCurrentLayer)] << " ";
+				  if((j % nodesPerLayer[i+1]) == (nodesPerLayer[i+1]-1))
+				  {
+					  weights << endl;
+				  }
+			  }
+			  
+			  weights << endl;
+		  }
+	  }
+	  else
+	  {
+		cout << "Can't make an ANN with 0 or 1 layers..." << endl;  
+	  }
+  }
+  else
+  {
+	cout << "ERROR: Could not open weights file to create small random weights." << endl;
+    return;	
+  }
 }
 
 bool ReadWeightsFromFile(string weightsFileName, double* &weightArray)
@@ -80,7 +130,7 @@ bool ReadWeightsFromFile(string weightsFileName, double* &weightArray)
   }
   else
   {
-    cout << "Couldn't open weights file." << endl;
+    cout << "ERROR: Could not open weights file to read." << endl;
     weights.close();
     return false;
   }
@@ -89,38 +139,42 @@ bool ReadWeightsFromFile(string weightsFileName, double* &weightArray)
 
 bool WriteWeightsToFile(string weightsFileName, double* &weightArray, vector<int> nodesPerLayer)
 {
-  //int nodesPerLayer[0] = number of input nodes.
-  //int nodesPerLayer[1] = number of output nodes.
   ofstream weights;
-  int loops = 0; 
+  int layers = nodesPerLayer.size();
+  int totalNodes = 0;
+  int totalNodesInCurrentLayer = 0;
+  
   weights.open(weightsFileName.c_str());
 
   if(weights.is_open())
   {
-    cout << "Writing to the generated weights file." << endl;
-    while(loops < nodesPerLayer.size())
+	cout << "Writing to the generated weights file." << endl;
+	if(layers > 1)
     {
-      weights << nodesPerLayer[loops] << " " << nodesPerLayer[loops+1] << endl;
-
-      for(int i = 0; i < nodesPerLayer[loops]; i++)
-      {
-        for(int j = 0; j < nodesPerLayer[loops+1] - 1; j++)
-        {
-          if(loops < 2)
-          {
-            weights << weightArray[j+(i*nodesPerLayer[loops+1])] << " ";
-          }
-          else
-          {
-            weights << weightArray[(nodesPerLayer[loops-2] * nodesPerLayer[loops-1]) + j + (i*nodesPerLayer[loops+1])] << " ";
-          }
-        }
-        weights << endl;
-      }
-
-      loops +=2;
-      weights << endl;
-    }
+		for(int i = 0; i < layers-1; i++)
+		{
+			weights << nodesPerLayer[i] << " " << nodesPerLayer[i+1] << endl;
+			totalNodesInCurrentLayer = nodesPerLayer[i] * nodesPerLayer[i+1];
+			for(int j = 0; j < totalNodesInCurrentLayer; j++)
+			{
+				weights << weightArray[j + (i * totalNodesInCurrentLayer)] << " ";
+				if((j % nodesPerLayer[i+1]) == (nodesPerLayer[i+1] - 1))
+				{
+					weights << endl;
+				}
+			}
+			weights << endl;
+		}
+	}		
+	else
+	{
+		cout << "Can't make an ANN with 0 or 1 layers..." << endl;
+	}
+  }
+  else
+  {
+	  cout << "ERRROR: Could not open weights file to write." << endl;
+	  return false;
   }
 
   delete [] weightArray;
