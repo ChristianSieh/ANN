@@ -29,8 +29,8 @@ void neuralNet::buildNet(prmFile prm)
 
 vector<vector<float> > neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI> csv_data, int yearIndex)
 {
-
-	vector<vector<float> > outputs.push_back(getInput(prm, csv_data, yearIndex));
+	vector<vector<float> > outputs;
+	outputs.push_back(getInput(prm, csv_data, yearIndex));
 
 	//All other layers need to take the previous layers output
 	for(int i = 1; i < net.size(); i++)
@@ -38,7 +38,7 @@ vector<vector<float> > neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI>
 		vector<float> currentOutputs;
 		for(int j = 0; j< net[i].size(); j++)
 		{	
-			net[i][j].ActivationFunction(previousOutputs, j);
+			net[i][j].ActivationFunction(outputs[i], j);
 			currentOutputs.push_back(net[i][j].output);	
 		}
 	
@@ -134,7 +134,7 @@ int neuralNet::calculateGuessError(vector<int> results, vector<PDSI> csv_data, p
 {
 	int error = 0;
 
-	vector<int> desired = classify(yearIndex, prm)
+	vector<int> desired = classify(yearIndex, csv_data, prm);
 
 	//Should have to vectors with 3 ints each which are all 0's or 1's
 	//such as 001 and 110 and then it is XOR to give us a total error
@@ -157,7 +157,7 @@ float neuralNet::calculateHiddenNodeError()
 	
 }
 
-double neuralNet::learningRule(double weight, prmFile prm, vector<vector<float> >)
+double neuralNet::learningRule(double weight, prmFile prm, vector<vector<float> > outputs)
 {
 	
 }
@@ -169,20 +169,26 @@ vector<int> neuralNet::classify(int yearIndex, vector<PDSI> csv_data, prmFile pr
 	
 	if(csv_data[yearIndex].AcresBurned < prm.range[0])
 	{
-		int arr[] = {1,0,0}
-		classified.push_back(arr, arr+3);
+		int arr[] = {1,0,0};
+		//Using vector constructor to push 3 values at once
+		//might be an easier way to do this or just use
+		//push back
+		vector<int> temp(arr, arr+3);
+		classified = temp;
 	}	
 
 	if(csv_data[yearIndex].AcresBurned > prm.range[0] && csv_data[yearIndex].AcresBurned   < prm.range[1])
 	{
-		int arr[] = {0,1,0}
-		classified.push_back(arr, arr+3);
+		int arr[] = {0,1,0};
+		vector<int> temp(arr, arr+3);
+		classified = temp;
 	}
 
 	if(csv_data[yearIndex].AcresBurned > prm.range[1])
 	{
-		int arr[] = {0,0,1}
-		classified.push_back(arr, arr+3);
+		int arr[] = {0,0,1};
+		vector<int> temp(arr, arr+3);
+		classified = temp;
 	}
 
 	return classified;
