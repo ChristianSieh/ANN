@@ -61,7 +61,7 @@ void prmFile::parsePrm(string prmFileName)
 	splitString = split(parameters[5], ' ');
 	layers = stoi(splitString[0],nullptr,0)+1;
 	splitString = split(parameters[6], ' ');
-	for(int i = 0; i < layers; i++)
+	for(int i = 0; i < layers+1; i++)
 	{
 		intConvert = stoi(splitString[i]);
 		nodesPerLayer.push_back(intConvert);
