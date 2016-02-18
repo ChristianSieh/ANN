@@ -1,17 +1,30 @@
+#ifndef _TESTWEIGHTS_H
+#define _TESTWEIGHTS_H
+
 #include <iostream>
-#include <fstream>
 #include <string>
+#include <sstream>
+#include <fstream>
 #include <vector>
 #include <time.h>
-#include <math.h>
+#include <stdlib.h>
 #include "prmFile.h"
 
 using namespace std;
 
-bool ReadWeightsFromFile(string weightsFileName, double* &weightArray);
+class Weights
+{
+	public:
+		vector<int> nodesPerLayer;
+		vector<vector<vector<double> > > weights;
 
-bool WriteWeightsToFile(string weightsFileName, double* &weightArray, vector<int> nodesPerLayer);
+		Weights();
+		~Weights();
+		void WeightsSetUp(prmFile prm);
+		void ReadWeightsFromFile(prmFile params);
+		void WriteWeightsToFile(prmFile params);
+		void CreateWeights(prmFile params);
+		void PrintWeights();
+};
 
-void CreateWeights(string weightsFileName, double* &weightArray, vector<int> nodesPerLayer);
-
-void WeightsSetUp(prmFile prm, double* &weightArray);
+#endif

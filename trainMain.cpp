@@ -14,7 +14,6 @@ using namespace std;
 int main(int argc, char * argv[])
 {
 	prmFile prm;
-	double* weightArray;
 
 	if(argc < 2)
         {
@@ -23,18 +22,22 @@ int main(int argc, char * argv[])
 	
 	else
 	{
-	prm.parsePrm(argv[1]);		
+		prm.parsePrm(argv[1]);
+		cout << "Parameters parsed correctly\n";
+		vector<PDSI> csv_data;
+		csv_data = parseCSV(prm.csvFileName.c_str());
 
-	vector<PDSI> csv_data;
-	csv_data = parseCSV(prm.csvFileName.c_str());
+		neuralNet net;
 
-	neuralNet net;
+		Weights wts;
+		wts.WeightsSetUp(prm);
 
-        WeightsSetUp(prm, weightArray);
+		wts.PrintWeights();
 
-	net.buildNet(prm);
+		wts.WriteWeightsToFile(prm);
+		//net.buildNet(prm);
 
-	net.trainNet(prm, csv_data);
+		//net.trainNet(prm, csv_data);
 	}
 
 	return 0;
