@@ -27,10 +27,10 @@ void neuralNet::buildNet(prmFile prm)
 }
 
 
-vector<float> neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI> csv_data, int yearIndex)
+vector<vector<float> > neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI> csv_data, int yearIndex)
 {
 
-	vector<float> previousOutputs = getInput(prm, csv_data, yearIndex);
+	vector<vector<float> > outputs.push_back(getInput(prm, csv_data, yearIndex));
 
 	//All other layers need to take the previous layers output
 	for(int i = 1; i < net.size(); i++)
@@ -42,18 +42,28 @@ vector<float> neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI> csv_data
 			currentOutputs.push_back(net[i][j].output);	
 		}
 	
-		previousOutputs = currentOutputs;
+		outputs.push_back(currentOutputs);
 	}
 
-	return previousOutputs;
+	int size = outputs.size();
+
+	//Round the results to 0 or 1
+	for(int i = 0; i < outputs[size].size(); i++)
+	{
+		outputs[size][i] = round(outputs[size][i]);
+	}
+
+	return outputs;
 }
 
 void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 {
 	int i = 0;
 	float error = prm.threshold + 1;
-	float errorDifference;//TODO
+	float errorDifference;
 
+	//TODO: Add in errorDifference so if the error isn't getting
+	//lower then we quit
 	while(i < prm.epochs && error > prm.threshold)
 	{
 		vector<int> randomIndex;
@@ -67,15 +77,14 @@ void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 
 		for(int j = 0; j < randomIndex.size(); j++)
 		{
-			vector<float> results = propogatePerceptrons(prm, csv_data, randomIndex[j]);
-				
+			vector<vector<float> > outputs = propogatePerceptrons(prm, csv_data, randomIndex[j]);
+			
 			//Delta learning rule
 			//wij^t+1 = wij^t (ada)yi(delta)j
 			//Need to get delta
 			//Adjust weights
-			//Run Again
-			
-			
+			//Run Again										
+						
 		}
 
 		i++;
@@ -121,16 +130,62 @@ vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 	}
 }
 
-float neuralNet::calculateError(vector<float> results)
+int neuralNet::calculateGuessError(vector<int> results, vector<PDSI> csv_data, prmFile prm, int yearIndex)
 {
-	float error = 0;
+	int error = 0;
 
-	for( int i = 0; i < results.size(); i++)
+	vector<int> desired = classify(yearIndex, prm)
+
+	//Should have to vectors with 3 ints each which are all 0's or 1's
+	//such as 001 and 110 and then it is XOR to give us a total error
+	//of 3
+	for(int i = 0; i < results.size(); i++)
 	{
-		//error += d[i] - results[i];	
+		error += desired[i] ^ results[i];	
 	}
-
-	error = error / results.size();
 
 	return error;
 }
+
+float neuralNet::calculateOutputNodeError(int guessError, int node, vector<int> results)
+{
+	return results[node] * (1 - results[node]) * guessError;
+}
+
+float neuralNet::calculateHiddenNodeError()
+{
+	
+}
+
+double neuralNet::learningRule(double weight, prmFile prm, vector<vector<float> >)
+{
+	
+}
+
+//TODO: Make it so range can be dynamic
+vector<int> neuralNet::classify(int yearIndex, vector<PDSI> csv_data, prmFile prm)
+{
+	vector<int> classified;
+	
+	if(csv_data[yearIndex].AcresBurned < prm.range[0])
+	{
+		int arr[] = {1,0,0}
+		classified.push_back(arr, arr+3);
+	}	
+
+	if(csv_data[yearIndex].AcresBurned > prm.range[0] && csv_data[yearIndex].AcresBurned   < prm.range[1])
+	{
+		int arr[] = {0,1,0}
+		classified.push_back(arr, arr+3);
+	}
+
+	if(csv_data[yearIndex].AcresBurned > prm.range[1])
+	{
+		int arr[] = {0,0,1}
+		classified.push_back(arr, arr+3);
+	}
+
+	return classified;
+}
+
+
