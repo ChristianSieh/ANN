@@ -25,6 +25,7 @@ void CreateWeights(string weightsFileName, double* &weightArray, vector<int> nod
   int layers = nodesPerLayer.size();
   int totalNodes = 0;
   int totalNodesInCurrentLayer = 0;
+  int currentIndex = 0;
   double randomValue = 0;
   
   weights.open(weightsFileName);
@@ -38,6 +39,7 @@ void CreateWeights(string weightsFileName, double* &weightArray, vector<int> nod
 		  {
 			  totalNodes += nodesPerLayer[i] * nodesPerLayer[i+1];
 		  }
+
 		  weightArray = new(nothrow) double[totalNodes]();
 		  for(int j = 0; j < totalNodes; j++)
 		  {
@@ -52,20 +54,23 @@ void CreateWeights(string weightsFileName, double* &weightArray, vector<int> nod
 			  totalNodesInCurrentLayer = nodesPerLayer[i] * nodesPerLayer[i+1];
 			  for(int j = 0; j < totalNodesInCurrentLayer; j++)
 			  {
-				  weights << weightArray[j + (i * totalNodesInCurrentLayer)] << " ";
+				  weights << weightArray[currentIndex + j] << " ";
 				  if((j % nodesPerLayer[i+1]) == (nodesPerLayer[i+1]-1))
 				  {
 					  weights << endl;
 				  }
 			  }
+			  currentIndex += totalNodesInCurrentLayer;
 			  
 			  weights << endl;
 		  }
+		delete [] weightArray;
 	  }
 	  else
 	  {
 		cout << "Can't make an ANN with 0 or 1 layers..." << endl;  
 	  }
+  	weights.close();
   }
   else
   {
@@ -144,6 +149,7 @@ bool WriteWeightsToFile(string weightsFileName, double* &weightArray, vector<int
   ofstream weights;
   int layers = nodesPerLayer.size();
   int totalNodesInCurrentLayer = 0;
+  int currentIndex = 0;
   
   weights.open(weightsFileName.c_str());
 
@@ -158,13 +164,14 @@ bool WriteWeightsToFile(string weightsFileName, double* &weightArray, vector<int
 			totalNodesInCurrentLayer = nodesPerLayer[i] * nodesPerLayer[i+1];
 			for(int j = 0; j < totalNodesInCurrentLayer; j++)
 			{
-				weights << weightArray[j + (i * totalNodesInCurrentLayer)] << " ";
+				weights << weightArray[currentIndex + j] << " ";
 				if((j % nodesPerLayer[i+1]) == (nodesPerLayer[i+1] - 1))
 				{
 					weights << endl;
 				}
 			}
 			weights << endl;
+			currentIndex+= totalNodesInCurrentLayer;
 		}
 	}		
 	else

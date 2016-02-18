@@ -7,6 +7,7 @@
 #include "csvparse.h"
 #include "neuralnet.h"
 #include "prmFile.h"
+#include "weights.h"
 
 using namespace std;
 
@@ -15,6 +16,13 @@ int main(int argc, char * argv[])
 	prmFile prm;
 	double* weightArray;
 
+	if(argc < 2)
+        {
+		cout << "USAGE: ANNtrain parameterFile" << endl;
+        }
+	
+	else
+	{
 	prm.parsePrm(argv[1]);		
 
 	vector<PDSI> csv_data;
@@ -27,7 +35,8 @@ int main(int argc, char * argv[])
 	net.buildNet(prm);
 
 	net.trainNet(prm, csv_data);
-	
+	}
+
 	return 0;
 }
 

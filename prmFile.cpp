@@ -59,7 +59,7 @@ void prmFile::parsePrm(string prmFileName)
 	splitString = split(parameters[4], ' ');
 	threshold = stof(splitString[0],&sz);
 	splitString = split(parameters[5], ' ');
-	layers = stoi(splitString[0],nullptr,0);
+	layers = stoi(splitString[0],nullptr,0)+1;
 	splitString = split(parameters[6], ' ');
 	for(int i = 0; i < layers; i++)
 	{
