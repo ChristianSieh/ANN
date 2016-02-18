@@ -14,7 +14,7 @@ void WeightsSetUp(string weightsFileName, float learningRate, float momentum, ve
   }
   else
   {
-    CreateWeights(weightsFileName, weightArray);
+    CreateWeights(weightsFileName, weightArray, nodesPerLayer);
   }
 }
 
@@ -80,7 +80,8 @@ bool ReadWeightsFromFile(string weightsFileName, double* &weightArray)
   int outputs = 0;
   string line;
   int totalWeights = 0;
-  double* oldweights;
+  bool firsttime = true;
+  double* oldWeights;
 
   weights.open(weightsFileName.c_str());
 
