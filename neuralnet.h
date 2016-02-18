@@ -20,7 +20,7 @@ class neuralNet
 	~neuralNet();
 
 	void buildNet(prmFile prm);
-	vector<int> propogatePerceptrons(prmFile prm, vector<PDSI> csv_data, int yearIndex);
+	vector<vector<float> > propogatePerceptrons(prmFile prm, vector<PDSI> csv_data, int yearIndex);
 	void trainNet(prmFile prm, vector<PDSI> csv_data);
 	void testNet();
 	void crossValidate();
@@ -29,6 +29,6 @@ class neuralNet
 	float calculateOutputNodeError(int guessError, int node, vector<int> results);
 	float calculateHiddenNodeError();
 	double learningRule(double weight, prmFile prm, vector<vector<float> >);
-	vector<int> neuralNet::classify(int num, vector<PDSI> csv_data, prmFile prm);
+	vector<int> classify(int num, vector<PDSI> csv_data, prmFile prm);
 };
 #endif
