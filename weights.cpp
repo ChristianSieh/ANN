@@ -36,7 +36,7 @@ void Weights::ReadWeightsFromFile(prmFile params)
 	//Now read in all of the 2d arrays inside the weights file, the first will be
 	//nodesPerLayer[0] x nodesPerLayer[1], second will be nodesPerLayer[1] x nPL[2] ...
 
-	for(int i = 0; i < params.layers; i++)
+	for(int i = 0; i < params.layers-1; i++)
 	{
 		vector<vector<double> > weight_layer;
 		
