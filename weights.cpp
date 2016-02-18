@@ -1,20 +1,21 @@
 #include "weights.h"
+#include "prmFile.h"
 
 using namespace std;
 
-void WeightsSetUp(string weightsFileName, float learningRate, float momentum, vector<int> nodesPerLayer, double* &weightArray)
+void WeightsSetUp(prmFile prm, double* &weightArray)
 {
   ifstream test;
-  test.open(weightsFileName.c_str());
+  test.open(prm.weightsFileName.c_str());
 
   if(test.is_open())
   {
     test.close();
-    ReadWeightsFromFile(weightsFileName, weightArray);
+    ReadWeightsFromFile(prm.weightsFileName, weightArray);
   }
   else
   {
-    CreateWeights(weightsFileName, weightArray, nodesPerLayer);
+    CreateWeights(prm.weightsFileName, weightArray, prm.nodesPerLayer);
   }
 }
 
@@ -142,7 +143,6 @@ bool WriteWeightsToFile(string weightsFileName, double* &weightArray, vector<int
 {
   ofstream weights;
   int layers = nodesPerLayer.size();
-  int totalNodes = 0;
   int totalNodesInCurrentLayer = 0;
   
   weights.open(weightsFileName.c_str());

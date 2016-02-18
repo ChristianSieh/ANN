@@ -13,6 +13,7 @@ using namespace std;
 int main(int argc, char * argv[])
 {
 	prmFile prm;
+	double* weightArray;
 
 	prm.parsePrm(argv[1]);		
 
@@ -20,6 +21,8 @@ int main(int argc, char * argv[])
 	csv_data = parseCSV(prm.csvFileName.c_str());
 
 	neuralNet net;
+
+        WeightsSetUp(prm, weightArray);
 
 	net.buildNet(prm);
 
