@@ -8,13 +8,15 @@
 #include "perceptron.h"
 #include "prmFile.h"
 #include "csvparse.h"
+#include "weights.h"
 
 using namespace std;
 
 class neuralNet
 {
 	public:
-	vector<vector<Perceptron> > net;	
+	vector<vector<Perceptron> > net;
+	Weights wts;	
 
 	neuralNet();
 	~neuralNet();

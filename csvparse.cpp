@@ -40,7 +40,7 @@ void normalizePDSI(vector<PDSI> & csvData)
 	//Find max and min drought index values
 	double min_pdsi = 100;	// These values only have a range from -10 to 10
 	double max_pdsi = -100;
-	for(int i = 0; i < csvData.size(); i++)
+	for(unsigned int i = 0; i < csvData.size(); i++)
 	{
 		if(csvData[i].AcresBurned < min_acres)
 			min_acres = csvData[i].AcresBurned;
@@ -69,7 +69,7 @@ void normalizePDSI(vector<PDSI> & csvData)
 	}
 
 	// Now we have the min/max from the entire dataset
-	for(int i = 0; i < csvData.size(); i++)
+	for(unsigned int i = 0; i < csvData.size(); i++)
 	{
 		csvData[i].AcresBurned = (csvData[i].AcresBurned - min_acres) / (max_acres - min_acres);
 		

@@ -29,13 +29,7 @@ int main(int argc, char * argv[])
 
 		neuralNet net;
 
-		Weights wts;
-		wts.WeightsSetUp(prm);
-
-		wts.PrintWeights();
-
-		wts.WriteWeightsToFile(prm);
-		//net.buildNet(prm);
+		net.buildNet(prm);
 
 		//net.trainNet(prm, csv_data);
 	}

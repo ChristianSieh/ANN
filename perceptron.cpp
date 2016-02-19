@@ -1,5 +1,5 @@
-#include <vector>
 #include "perceptron.h"
+#include "weights.h"
 
 using namespace std;
 
@@ -24,9 +24,23 @@ Perceptron::~Perceptron(void)
 * Parameters:	previous_outputs - Contains all outputs from the previous layer
 *				node - This perceptrons position in the current layer
 ******************************************************************************/
-void Perceptron::ActivationFunction(vector<float> previous_outputs, int node)
+void Perceptron::ActivationFunction(vector<float> previous_output, Weights wts)
 {
-	//Look at the weights of each output to calculate the Sum(Wij * Yij)
-	//1 / (1-e^-x)
+	if(layer < 1)
+	{
+		//Handle input layer function (no weights, just pass through inputs)
+		//Output = sum(previous_output)	
+		return;
+	}
+
+	//Look at the weights of each output to calculate x = Sum(Wij * Yi) then
+	//output = 1 / (1-e^-x)
+	int x = 0;
+	for(unsigned int i = 0; i < wts.weights[layer][node].size(); i++)
+	{
+		x += previous_output[i] * wts.weights[layer-1][i][node];
+	}
+
+	output = 1.0 / (1.0 + exp(-x));
 }
 

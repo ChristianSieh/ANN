@@ -19,11 +19,15 @@ void neuralNet::buildNet(prmFile prm)
 		for(int j = 0; j < prm.nodesPerLayer[i]; j++)
 		{
 			Perceptron per;
+			per.layer = i;
+			per.node = j;
 			layer.push_back(per);		
 		}
 		
 		net.push_back(layer);
 	}
+	
+	wts.WeightsSetUp(prm);	//Build / generate weights
 }
 
 
@@ -33,22 +37,23 @@ vector<vector<float> > neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI>
 	outputs.push_back(getInput(prm, csv_data, yearIndex));
 
 	//All other layers need to take the previous layers output
-	for(int i = 1; i < net.size(); i++)
+	for(unsigned int layer = 1; layer < net.size(); layer++)
 	{
 		vector<float> currentOutputs;
-		for(int j = 0; j< net[i].size(); j++)
+		for(unsigned int node = 0; node < net[layer].size(); node++)
 		{	
-			net[i][j].ActivationFunction(outputs[i], j);
-			currentOutputs.push_back(net[i][j].output);	
+			// Pass in [layer-1] which is the output of the prev layer
+			net[layer][node].ActivationFunction(outputs[layer-1], wts);
+			currentOutputs.push_back(net[layer][node].output);	
 		}
 	
 		outputs.push_back(currentOutputs);
 	}
 
-	int size = outputs.size();
+	int size = outputs.size()-1;
 
 	//Round the results to 0 or 1
-	for(int i = 0; i < outputs[size].size(); i++)
+	for(unsigned int i = 0; i < outputs[size].size(); i++)
 	{
 		outputs[size][i] = round(outputs[size][i]);
 	}
@@ -60,7 +65,7 @@ void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 {
 	int i = 0;
 	float error = prm.threshold + 1;
-	float errorDifference;
+	//float errorDifference;
 
 	//TODO: Add in errorDifference so if the error isn't getting
 	//lower then we quit
@@ -68,14 +73,14 @@ void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 	{
 		vector<int> randomIndex;
 
-		for(int j = 0; j < csv_data.size(); j++)
+		for(unsigned int j = 0; j < csv_data.size(); j++)
 		{
 			randomIndex.push_back(j);
 		}
 
 		random_shuffle(randomIndex.begin(), randomIndex.end());
 
-		for(int j = 0; j < randomIndex.size(); j++)
+		for(unsigned int j = 0; j < randomIndex.size(); j++)
 		{
 			vector<vector<float> > outputs = propogatePerceptrons(prm, csv_data, randomIndex[j]);
 			
@@ -120,7 +125,7 @@ vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 	{
 		inputs.push_back(csv_data[yearIndex].DroughtIndex[monthIndex]);
 	
-		if(monthIndex = 0)
+		if(monthIndex == 0)
 		{
 			yearIndex--;
 		}
@@ -128,6 +133,8 @@ vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 		monthIndex = (monthIndex - 1) % 12;				
 		monthsPushed++;
 	}
+	
+	return inputs;
 }
 
 int neuralNet::calculateGuessError(vector<int> results, vector<PDSI> csv_data, prmFile prm, int yearIndex)
@@ -139,7 +146,7 @@ int neuralNet::calculateGuessError(vector<int> results, vector<PDSI> csv_data, p
 	//Should have to vectors with 3 ints each which are all 0's or 1's
 	//such as 001 and 110 and then it is XOR to give us a total error
 	//of 3
-	for(int i = 0; i < results.size(); i++)
+	for(unsigned int i = 0; i < results.size(); i++)
 	{
 		error += desired[i] ^ results[i];	
 	}
@@ -154,12 +161,12 @@ float neuralNet::calculateOutputNodeError(int guessError, int node, vector<int> 
 
 float neuralNet::calculateHiddenNodeError()
 {
-	
+	return 0.0;
 }
 
 double neuralNet::learningRule(double weight, prmFile prm, vector<vector<float> > outputs)
 {
-	
+	return 0.0;
 }
 
 //TODO: Make it so range can be dynamic

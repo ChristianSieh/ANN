@@ -63,15 +63,15 @@ void Weights::WriteWeightsToFile(prmFile params)
 	
 	if(!fout)
 	{
-		printf("Could not write to weights file '%s'\n", params.weightsFileName);
+		printf("Could not write to weights file '%s'\n", params.weightsFileName.c_str());
 		return;
 	}
 
-	for(int i = 0; i < this->weights.size(); i++)
+	for(unsigned int i = 0; i < this->weights.size(); i++)
 	{
-		for(int j = 0; j < this->weights[i].size(); j++)
+		for(unsigned int j = 0; j < this->weights[i].size(); j++)
 		{
-			for(int k = 0; k < this->weights[i][j].size(); k++)
+			for(unsigned int k = 0; k < this->weights[i][j].size(); k++)
 			{
 				fout << this->weights[i][j][k] << " ";
 			}
@@ -84,7 +84,6 @@ void Weights::WriteWeightsToFile(prmFile params)
 
 void Weights::CreateWeights(prmFile params)
 {
-	int temp;
 	srand(time(NULL));
 
 	for(int i = 0; i < params.layers-1; i++)
