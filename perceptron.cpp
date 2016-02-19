@@ -35,9 +35,10 @@ void Perceptron::ActivationFunction(vector<float> previous_output, Weights wts)
 
 	//Look at the weights of each output to calculate x = Sum(Wij * Yi) then
 	//output = 1 / (1-e^-x)
-	int x = 0;
-	for(unsigned int i = 0; i < wts.weights[layer][node].size(); i++)
+	double x = 0;
+	for(unsigned int i = 0; i < previous_output.size(); i++)
 	{
+		// i corresponds to the node num in previous node layer
 		x += previous_output[i] * wts.weights[layer-1][i][node];
 	}
 

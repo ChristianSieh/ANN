@@ -31,6 +31,8 @@ int main(int argc, char * argv[])
 
 		net.buildNet(prm);
 
+		net.propogatePerceptrons(prm, csv_data, 15);
+
 		//net.trainNet(prm, csv_data);
 	}
 

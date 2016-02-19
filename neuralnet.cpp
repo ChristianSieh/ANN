@@ -44,8 +44,10 @@ vector<vector<float> > neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI>
 		{	
 			// Pass in [layer-1] which is the output of the prev layer
 			net[layer][node].ActivationFunction(outputs[layer-1], wts);
-			currentOutputs.push_back(net[layer][node].output);	
+			currentOutputs.push_back(net[layer][node].output);
+			//cout << net[layer][node].output << " ";	
 		}
+		//cout << endl;
 	
 		outputs.push_back(currentOutputs);
 	}
@@ -79,6 +81,7 @@ void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 		}
 
 		random_shuffle(randomIndex.begin(), randomIndex.end());
+		//We now have our list of years to guess in random order
 
 		for(unsigned int j = 0; j < randomIndex.size(); j++)
 		{
