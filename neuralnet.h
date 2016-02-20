@@ -17,6 +17,7 @@ class neuralNet
 	public:
 	vector<vector<Perceptron> > net;
 	Weights wts;	
+	Weights previousWts;
 
 	neuralNet();
 	~neuralNet();
@@ -27,10 +28,10 @@ class neuralNet
 	void testNet();
 	void crossValidate();
 	vector<float> getInput(prmFile prm, vector<PDSI> csv_data, int yearIndex);
-	int calculateGuessError(vector<int> results, vector<PDSI> csv_data, prmFile prm, int yearIndex);
-	float calculateOutputNodeError(int guessError, int node, vector<int> results);
-	float calculateHiddenNodeError();
-	double learningRule(double weight, prmFile prm, vector<vector<float> >);
+	vector<int> calculateGuessError(vector<float> results, vector<PDSI> csv_data, prmFile prm, int yearIndex);
+	vector<float> calculateOutputNodeError(vector<int> guessError, int node, vector<float> results);
+	vector<float> calculateHiddenNodeError(vector<int> guessError, int node, vector<float> results);
+	void learningRule(int layer, prmFile prm, vector<vector<float> > outputs, vector<float> error);
 	vector<int> classify(int num, vector<PDSI> csv_data, prmFile prm);
 };
 #endif

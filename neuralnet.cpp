@@ -28,6 +28,7 @@ void neuralNet::buildNet(prmFile prm)
 	}
 	
 	wts.WeightsSetUp(prm);	//Build / generate weights
+	previousWts = wts;
 }
 
 
@@ -92,7 +93,22 @@ void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 			//Need to get delta
 			//Adjust weights
 			//Run Again										
-						
+
+			vector<int> guessError = calculateGuessError(outputs[outputs.size() - 1], csv_data, prm, randomIndex[j]);
+		
+			for(int layer = outputs.size() - 1; layer > 0; layer--)
+			{
+				if(layer == outputs.size() - 1)
+				{
+					calculateOutputNodeError(guessError, outputs[layer]);
+				}
+				else
+				{ 
+					calculateHiddenNodeError(guessError, layer, outputs[layer]);
+				}				
+
+				learningRule(layer, prm, outputs);
+			}						
 		}
 
 		i++;
@@ -140,9 +156,9 @@ vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 	return inputs;
 }
 
-int neuralNet::calculateGuessError(vector<int> results, vector<PDSI> csv_data, prmFile prm, int yearIndex)
+vector<int> neuralNet::calculateGuessError(vector<float> results, vector<PDSI> csv_data, prmFile prm, int yearIndex)
 {
-	int error = 0;
+	vector<int> error;
 
 	vector<int> desired = classify(yearIndex, csv_data, prm);
 
@@ -151,25 +167,51 @@ int neuralNet::calculateGuessError(vector<int> results, vector<PDSI> csv_data, p
 	//of 3
 	for(unsigned int i = 0; i < results.size(); i++)
 	{
-		error += desired[i] ^ results[i];	
+		//TODO:Make sure this works
+		error.push_back(desired[i] ^ (int)results[i]);	
 	}
 
 	return error;
 }
 
-float neuralNet::calculateOutputNodeError(int guessError, int node, vector<int> results)
+//Delta(k)
+vector<float> neuralNet::calculateOutputNodeError(vector<int> guessError, vector<float> results)
 {
-	return results[node] * (1 - results[node]) * guessError;
+	vector<float> errors;
+
+	for(int i = 0; i < results.size(); i++)
+	{
+		errors.push_back(results[i] * (1 - results[i]) * guessError);
+	}
 }
 
-float neuralNet::calculateHiddenNodeError()
+//Delta(j)
+vector <float> neuralNet::calculateHiddenNodeError(vector<int> guessError, int layer, vector< vector<float> > outputs)
 {
-	return 0.0;
+	float summation;
+	vector<float> errors;
+
+	//Get the summation of wjk * delta(k)
+	for(unsigned int i = 0; i < outputs[layer].size(); i++)
+	{
+		for(unsigned int j = 0; j < outputs[
+		summation += wts.weights * calculateOutputNodeError(guessError, i, results);
+	}
+
+	//delta(j) = yj(1 - yj) * summation of k = 1 to n(wjk * delta(k)
+	errors.push_back(results[node] * (1 - results[node]) * summation);
 }
 
-double neuralNet::learningRule(double weight, prmFile prm, vector<vector<float> > outputs)
+void neuralNet::learningRule(int layer, prmFile prm, vector<vector<float> > outputs)
 {
-	return 0.0;
+	for(unsigned int i = 0; i < wts.weights[layer - 1][0].size(); i++)
+	{
+		for(unsigned int j = 0; j < wts.weights[layer - 1].size(); j++)
+		{
+			//wts.weights[layer - 1][j][i] += prm.learningRate * outputs[layer - 1][j] * net[layer];
+		}	
+	}
+	
 }
 
 //TODO: Make it so range can be dynamic

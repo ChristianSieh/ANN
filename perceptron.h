@@ -13,6 +13,7 @@ class Perceptron
 		double output;
 		int layer;
 		int node;
+		float error;
 		
 		Perceptron();
 		~Perceptron();
