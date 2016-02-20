@@ -33,8 +33,20 @@ struct PDSI
 	float DroughtIndex[12];
 };
 
-vector<PDSI> parseCSV(const char * filename);
-void setParam(PDSI & tmp, double n, int index);
-void normalizePDSI(vector<PDSI> & csvData);
+class csvParser
+{
+	public:
+		double maxBurnedAcre;
+		vector<PDSI> csv_data;
+		
+		csvParser();
+		~csvParser();
+		void parseCSV(const char * filename);
+		void normalizePDSI();
+
+	private:
+		void setParam(PDSI & tmp, double n, int index);
+};
+
 
 #endif

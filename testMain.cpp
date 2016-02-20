@@ -13,11 +13,12 @@ using namespace std;
 int main(int argc, char * argv[])
 {
 	prmFile prm;
-
+	csvParser csv;
 	prm.parsePrm(argv[1]);		
-
+	csv.parseCSV(prm.csvFileName.c_str());
+	
 	vector<PDSI> csv_data;
-	csv_data = parseCSV(prm.csvFileName.c_str());
+	
 
 	neuralNet net;
 

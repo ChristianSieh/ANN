@@ -32,39 +32,46 @@ void neuralNet::buildNet(prmFile prm)
 }
 
 
-vector<vector<float> > neuralNet::propogatePerceptrons(prmFile prm, vector<PDSI> csv_data, int yearIndex)
+void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex)
 {
 	vector<vector<float> > outputs;
 	outputs.push_back(getInput(prm, csv_data, yearIndex));
 
 	//All other layers need to take the previous layers output
-	for(unsigned int layer = 1; layer < net.size(); layer++)
+	for(unsigned int layer = 0; layer < net.size(); layer++)
 	{
 		vector<float> currentOutputs;
 		for(unsigned int node = 0; node < net[layer].size(); node++)
 		{	
-			// Pass in [layer-1] which is the output of the prev layer
-			net[layer][node].ActivationFunction(outputs[layer-1], wts);
-			currentOutputs.push_back(net[layer][node].output);
-			//cout << net[layer][node].output << " ";	
+			if(layer == 0)
+			{
+				net[layer][node].ActivationFunction(outputs[layer], wts);
+			}
+			else
+			{
+				// Pass in [layer-1] which is the output of the prev layer
+				net[layer][node].ActivationFunction(outputs[layer-1], wts);
+				currentOutputs.push_back(net[layer][node].output);
+				//cout << "Node Output: " << net[layer][node].output << " ";	
+			}
 		}
 		//cout << endl;
 	
 		outputs.push_back(currentOutputs);
 	}
 
-	int size = outputs.size()-1;
+	//int size = net.size()-1;
 
 	//Round the results to 0 or 1
-	for(unsigned int i = 0; i < outputs[size].size(); i++)
+/*	for(unsigned int i = 0; i < net[size].size(); i++)
 	{
-		outputs[size][i] = round(outputs[size][i]);
-	}
-
-	return outputs;
+//		cout << "Output Node" << i << " " << net[size][i].output << endl;
+		net[size][i].output = round(net[size][i].output);
+//		cout << "Output Node After" << i << " " << net[size][i].output << endl;
+	}*/
 }
 
-void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
+void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 {
 	int i = 0;
 	float error = prm.threshold + 1;
@@ -74,9 +81,11 @@ void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 	//lower then we quit
 	while(i < prm.epochs && error > prm.threshold)
 	{
+		//cout << "Epochs: " << i << endl;
+	
 		vector<int> randomIndex;
 
-		for(unsigned int j = 0; j < csv_data.size(); j++)
+		for(unsigned int j = 0; j < csv_data.csv_data.size(); j++)
 		{
 			randomIndex.push_back(j);
 		}
@@ -86,28 +95,22 @@ void neuralNet::trainNet(prmFile prm, vector<PDSI> csv_data)
 
 		for(unsigned int j = 0; j < randomIndex.size(); j++)
 		{
-			vector<vector<float> > outputs = propogatePerceptrons(prm, csv_data, randomIndex[j]);
+			propogatePerceptrons(prm, csv_data, randomIndex[j]);
 			
-			//Delta learning rule
-			//wij^t+1 = wij^t (ada)yi(delta)j
-			//Need to get delta
-			//Adjust weights
-			//Run Again										
-
-			vector<int> guessError = calculateGuessError(outputs[outputs.size() - 1], csv_data, prm, randomIndex[j]);
+			vector<double> guessError = calculateGuessError(csv_data, prm, randomIndex[j]);
 		
-			for(int layer = outputs.size() - 1; layer > 0; layer--)
+			for(unsigned int layer = net.size() - 1; layer > 0; layer--)
 			{
-				if(layer == outputs.size() - 1)
+				if(layer == net.size() - 1)
 				{
-					calculateOutputNodeError(guessError, outputs[layer]);
+					calculateOutputNodeError(guessError, layer);
 				}
 				else
 				{ 
-					calculateHiddenNodeError(guessError, layer, outputs[layer]);
+					calculateHiddenNodeError(layer);
 				}				
 
-				learningRule(layer, prm, outputs);
+				learningRule(layer, prm);
 			}						
 		}
 
@@ -126,7 +129,7 @@ void neuralNet::crossValidate()
 }
 
 
-vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIndex)
+vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex)
 {
 	//TODO: Check size of input vector and if to small then ignore that year	
 
@@ -134,7 +137,7 @@ vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 
 	for(int i = yearIndex; i > yearIndex - prm.yearsBurned && i >= 0; i--)
 	{
-		inputs.push_back(csv_data[yearIndex - i].AcresBurned);
+		inputs.push_back(csv_data.csv_data[yearIndex - i].AcresBurned);
 	}		
 	
 	int monthsPushed = 0;
@@ -142,7 +145,7 @@ vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 
 	while(monthsPushed < prm.monthsPDSI && yearIndex >= 0)
 	{
-		inputs.push_back(csv_data[yearIndex].DroughtIndex[monthIndex]);
+		inputs.push_back(csv_data.csv_data[yearIndex].DroughtIndex[monthIndex]);
 	
 		if(monthIndex == 0)
 		{
@@ -156,70 +159,93 @@ vector<float> neuralNet::getInput(prmFile prm, vector<PDSI> csv_data, int yearIn
 	return inputs;
 }
 
-vector<int> neuralNet::calculateGuessError(vector<float> results, vector<PDSI> csv_data, prmFile prm, int yearIndex)
+vector<double> neuralNet::calculateGuessError(csvParser csv_data, prmFile prm, int yearIndex)
 {
-	vector<int> error;
+	vector<double> error;
 
 	vector<int> desired = classify(yearIndex, csv_data, prm);
 
 	//Should have to vectors with 3 ints each which are all 0's or 1's
 	//such as 001 and 110 and then it is XOR to give us a total error
 	//of 3
-	for(unsigned int i = 0; i < results.size(); i++)
+	
+	int size = net.size() - 1;
+
+	for(unsigned int i = 0; i < net[size].size(); i++)
 	{
 		//TODO:Make sure this works
-		error.push_back(desired[i] ^ (int)results[i]);	
+		//Changed this from XOR
+		double test = desired[i] - net[size][i].output;
+		error.push_back(test);	
+		cout << "TEST: " << test << endl;
 	}
 
 	return error;
 }
 
 //Delta(k)
-vector<float> neuralNet::calculateOutputNodeError(vector<int> guessError, vector<float> results)
+void neuralNet::calculateOutputNodeError(vector<double> guessError,  int layer)
 {
-	vector<float> errors;
-
-	for(int i = 0; i < results.size(); i++)
+	for(unsigned int i = 0; i < net[layer].size(); i++)
 	{
-		errors.push_back(results[i] * (1 - results[i]) * guessError);
+		cout << "BEFORE Output Error: " << net[layer][i].error << endl;
+		net[layer][i].error = (net[layer][i].output * (1 - net[layer][i].output) * guessError[i]);
+		cout << "AFTER Output Error: " << net[layer][i].error << endl;
 	}
 }
 
 //Delta(j)
-vector <float> neuralNet::calculateHiddenNodeError(vector<int> guessError, int layer, vector< vector<float> > outputs)
+void neuralNet::calculateHiddenNodeError(int layer)
 {
-	float summation;
-	vector<float> errors;
-
 	//Get the summation of wjk * delta(k)
-	for(unsigned int i = 0; i < outputs[layer].size(); i++)
+	for(unsigned int node = 0; node < net[layer].size(); node++)
 	{
-		for(unsigned int j = 0; j < outputs[
-		summation += wts.weights * calculateOutputNodeError(guessError, i, results);
-	}
+		float summation = 0;
+	
+		//cout << "BEFORE Error: " << net[layer][node].error << endl;
+			
+		for(unsigned int k = 0; k < net[layer + 1].size(); k++)
+		{
+			cout << "Weights: " << wts.weights[layer][node][k] << endl;
+			cout << "Error: " << net[layer + 1][k].error << endl;
+			summation += wts.weights[layer][node][k] * net[layer + 1][k].error;			
+		}		
 
-	//delta(j) = yj(1 - yj) * summation of k = 1 to n(wjk * delta(k)
-	errors.push_back(results[node] * (1 - results[node]) * summation);
+		float yj = net[layer][node].output;		
+		
+		net[layer][node].error = yj * (1 - yj) * summation;
+		//cout << "Summation: " << summation << endl;
+		//cout << "YJ: " << yj << endl;
+		//cout << "AFTER Error: " << net[layer][node].error << endl;
+	}
 }
 
-void neuralNet::learningRule(int layer, prmFile prm, vector<vector<float> > outputs)
+//Given a layer it should adjust the weights between the given layer and the previous layer.
+//For node k in layer iterate through all the weights from k through all the nodes in layer j (the previous layer).
+//
+void neuralNet::learningRule(int layer, prmFile prm)
 {
-	for(unsigned int i = 0; i < wts.weights[layer - 1][0].size(); i++)
+	// i iterates through nodes in layer
+	for(unsigned int i = 0; i < net[layer].size(); i++)
 	{
-		for(unsigned int j = 0; j < wts.weights[layer - 1].size(); j++)
+		// j iterates through nodes in layer-1
+		for(unsigned int j = 0; j < net[layer - 1].size(); j++)
 		{
-			//wts.weights[layer - 1][j][i] += prm.learningRate * outputs[layer - 1][j] * net[layer];
+			//cout << "BEFORE LearningRate: " << prm.learningRate << " Node Output: " << net[layer-1][j].output << " Error: " << net[layer][i].error << endl;
+			wts.weights[layer - 1][j][i] += prm.learningRate * net[layer - 1][j].output * net[layer][i].error;
+			//cout << "AFTER LearningRate: " << prm.learningRate << " Node Output: " << net[layer-1][j].output << " Error: " << net[layer][i].error << endl;
 		}	
 	}
-	
 }
 
 //TODO: Make it so range can be dynamic
-vector<int> neuralNet::classify(int yearIndex, vector<PDSI> csv_data, prmFile prm)
+vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 {
 	vector<int> classified;
+
+	cout << "AcresBurned: " << csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre << " Range: " << prm.range[0] << " " << prm.range[1] << " YearIndex: " << yearIndex << endl;
 	
-	if(csv_data[yearIndex].AcresBurned < prm.range[0])
+	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre < prm.range[0])
 	{
 		int arr[] = {1,0,0};
 		//Using vector constructor to push 3 values at once
@@ -227,20 +253,23 @@ vector<int> neuralNet::classify(int yearIndex, vector<PDSI> csv_data, prmFile pr
 		//push back
 		vector<int> temp(arr, arr+3);
 		classified = temp;
+		cout << "Classified1: " << classified[0] << classified[1] << classified[2] << endl;
 	}	
 
-	if(csv_data[yearIndex].AcresBurned > prm.range[0] && csv_data[yearIndex].AcresBurned   < prm.range[1])
+	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre > prm.range[0] && csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre   < prm.range[1])
 	{
 		int arr[] = {0,1,0};
 		vector<int> temp(arr, arr+3);
 		classified = temp;
+		cout << "Classified2: " << classified[0] << classified[1] << classified[2] << endl;
 	}
 
-	if(csv_data[yearIndex].AcresBurned > prm.range[1])
+	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre > prm.range[1])
 	{
 		int arr[] = {0,0,1};
 		vector<int> temp(arr, arr+3);
 		classified = temp;
+		cout << "Classified3: " << classified[0] << classified[1] << classified[2] << endl;
 	}
 
 	return classified;

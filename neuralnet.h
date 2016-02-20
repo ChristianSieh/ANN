@@ -23,15 +23,15 @@ class neuralNet
 	~neuralNet();
 
 	void buildNet(prmFile prm);
-	vector<vector<float> > propogatePerceptrons(prmFile prm, vector<PDSI> csv_data, int yearIndex);
-	void trainNet(prmFile prm, vector<PDSI> csv_data);
+	void propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex);
+	void trainNet(prmFile prm, csvParser csv_data);
 	void testNet();
 	void crossValidate();
-	vector<float> getInput(prmFile prm, vector<PDSI> csv_data, int yearIndex);
-	vector<int> calculateGuessError(vector<float> results, vector<PDSI> csv_data, prmFile prm, int yearIndex);
-	vector<float> calculateOutputNodeError(vector<int> guessError, int node, vector<float> results);
-	vector<float> calculateHiddenNodeError(vector<int> guessError, int node, vector<float> results);
-	void learningRule(int layer, prmFile prm, vector<vector<float> > outputs, vector<float> error);
-	vector<int> classify(int num, vector<PDSI> csv_data, prmFile prm);
+	vector<float> getInput(prmFile prm, csvParser csv_data, int yearIndex);
+	vector<double> calculateGuessError(csvParser csv_data, prmFile prm, int yearIndex);
+	void calculateOutputNodeError(vector<double> guessError, int layer);
+	void calculateHiddenNodeError(int layer);
+	void learningRule(int layer, prmFile prm);
+	vector<int> classify(int num, csvParser csv, prmFile prm);
 };
 #endif

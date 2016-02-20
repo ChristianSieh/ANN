@@ -1,11 +1,21 @@
 #include "csvparse.h"
 
-vector<PDSI> parseCSV(const char * filename)
+csvParser::csvParser()
+{
+
+}
+
+csvParser::~csvParser()
+{
+
+}
+
+void csvParser::parseCSV(const char * filename)
 {
 
 	ifstream fin;
 	fin.open(filename);
-	vector<PDSI> csvData;
+
 	while(fin)
 	{
 		char * line = new char[1000];
@@ -23,16 +33,14 @@ vector<PDSI> parseCSV(const char * filename)
 				num = strtok(NULL, " ,\n");
 				index++;
 			}
-			csvData.push_back(tmp);
+			csv_data.push_back(tmp);
 		}
 	}
 
-	normalizePDSI(csvData);
-
-	return csvData;
+	normalizePDSI();
 }
 
-void normalizePDSI(vector<PDSI> & csvData)
+void csvParser::normalizePDSI()
 {
 	//Find max and min acres burned
 	double min_acres = 2147483647;
@@ -40,13 +48,13 @@ void normalizePDSI(vector<PDSI> & csvData)
 	//Find max and min drought index values
 	double min_pdsi = 100;	// These values only have a range from -10 to 10
 	double max_pdsi = -100;
-	for(unsigned int i = 0; i < csvData.size(); i++)
+	for(unsigned int i = 0; i < csv_data.size(); i++)
 	{
-		if(csvData[i].AcresBurned < min_acres)
-			min_acres = csvData[i].AcresBurned;
+		if(csv_data[i].AcresBurned < min_acres)
+			min_acres = csv_data[i].AcresBurned;
 
-		else if(csvData[i].AcresBurned > max_acres)
-			max_acres = csvData[i].AcresBurned;
+		else if(csv_data[i].AcresBurned > max_acres)
+			max_acres = csv_data[i].AcresBurned;
 
 		//Now run through the 12 months of pdsi data and see if the years
 		//min/max pdsi is a global min/max
@@ -54,11 +62,11 @@ void normalizePDSI(vector<PDSI> & csvData)
 		double local_max = -100;
 		for(int j = 0; j < 12; j++)
 		{
-			if(csvData[i].DroughtIndex[j] < local_min)
-				local_min = csvData[i].DroughtIndex[j];
+			if(csv_data[i].DroughtIndex[j] < local_min)
+				local_min = csv_data[i].DroughtIndex[j];
 
-			else if(csvData[i].DroughtIndex[j] > local_max)
-				local_max = csvData[i].DroughtIndex[j];
+			else if(csv_data[i].DroughtIndex[j] > local_max)
+				local_max = csv_data[i].DroughtIndex[j];
 		}
 		if(local_min < min_pdsi)
 			min_pdsi = local_min;
@@ -67,20 +75,22 @@ void normalizePDSI(vector<PDSI> & csvData)
 			max_pdsi = local_max;
 		
 	}
+	//Keep max acres burned for later classification
+	maxBurnedAcre = max_acres;
 
 	// Now we have the min/max from the entire dataset
-	for(unsigned int i = 0; i < csvData.size(); i++)
+	for(unsigned int i = 0; i < csv_data.size(); i++)
 	{
-		csvData[i].AcresBurned = (csvData[i].AcresBurned - min_acres) / (max_acres - min_acres);
+		csv_data[i].AcresBurned = (csv_data[i].AcresBurned - min_acres) / (max_acres - min_acres);
 		
 		for(int j = 0; j < 12; j++)
 		{
-			csvData[i].DroughtIndex[j] = (csvData[i].DroughtIndex[j] - min_pdsi) / (max_pdsi - min_pdsi);
+			csv_data[i].DroughtIndex[j] = (csv_data[i].DroughtIndex[j] - min_pdsi) / (max_pdsi - min_pdsi);
 		}
 	}
 }
 
-void setParam(PDSI & tmp, double n, int index)
+void csvParser::setParam(PDSI & tmp, double n, int index)
 {
 	switch(index)
 	{

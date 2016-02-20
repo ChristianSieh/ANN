@@ -16,9 +16,6 @@ int main(int argc, char * argv[])
 
 	prm.parsePrm(argv[1]);		
 
-	vector<PDSI> csv_data;
-	csv_data = parseCSV(prm.csvFileName.c_str());
-
 	neuralNet net;
 
 	net.buildNet(prm);

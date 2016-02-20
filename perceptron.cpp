@@ -28,8 +28,8 @@ void Perceptron::ActivationFunction(vector<float> previous_output, Weights wts)
 {
 	if(layer < 1)
 	{
-		//Handle input layer function (no weights, just pass through inputs)
-		//Output = sum(previous_output)	
+		output = previous_output[node];
+
 		return;
 	}
 
@@ -43,5 +43,6 @@ void Perceptron::ActivationFunction(vector<float> previous_output, Weights wts)
 	}
 
 	output = 1.0 / (1.0 + exp(-x));
+//	cout << "Activation Output: " << output << endl;
 }
 
