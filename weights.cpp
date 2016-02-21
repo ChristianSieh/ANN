@@ -97,7 +97,7 @@ void Weights::CreateWeights(prmFile params)
 			{
 				
 				double tmp;
-				tmp = -1 + rand() / double(RAND_MAX / 2);
+				tmp = -5 + rand() / double(RAND_MAX / 10);
 				node_weights.push_back(tmp);
 			}
 			weight_layer.push_back(node_weights);
