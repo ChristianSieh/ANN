@@ -36,6 +36,17 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 {
 	vector<vector<float> > outputs;
 	outputs.push_back(getInput(prm, csv_data, yearIndex));
+	
+	if(outputs[outputs.size()-1].size() == 0)
+	{
+		return;
+	}
+	/*cout << "Input feature vector\n";
+	for(int i = 0; i < outputs[0].size(); i++)
+	{
+		cout << outputs[0][i] << ",  ";
+	}
+	cout << endl;*/
 
 	//All other layers need to take the previous layers output
 	for(unsigned int layer = 0; layer < net.size(); layer++)
@@ -46,35 +57,28 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 			if(layer == 0)
 			{
 				net[layer][node].ActivationFunction(outputs[layer], wts);
+				//cout << net[layer][node].output << " ";
 			}
 			else
 			{
-				cout << "Outputs.size(): " << outputs.size() << endl;
-				cout << "Layer: " << layer << endl;
-				// Pass in [layer-1] which is the output of the prev layer
-				for(int i = 0; i < outputs[layer-1].size(); i++)
-				{
-					cout << "Output: " << outputs[layer-1][i] << endl;
-				}
 				net[layer][node].ActivationFunction(outputs[layer-1], wts);
 				currentOutputs.push_back(net[layer][node].output);
-				//cout << "Node Output: " << net[layer][node].output << " ";	
+				//cout << net[layer][node].output << " ";
 			}
 		}
 		//cout << endl;
 	
+		if(layer == 0)
+			continue;
+
 		outputs.push_back(currentOutputs);
+		/*cout << "Output of layer " << layer << endl;
+		for(int i = 0; i < outputs[layer].size(); i++)
+		{
+			cout << outputs[layer][i] << ",  ";
+		}
+		cout << endl;*/
 	}
-
-	//int size = net.size()-1;
-
-	//Round the results to 0 or 1
-/*	for(unsigned int i = 0; i < net[size].size(); i++)
-	{
-//		cout << "Output Node" << i << " " << net[size][i].output << endl;
-		net[size][i].output = round(net[size][i].output);
-//		cout << "Output Node After" << i << " " << net[size][i].output << endl;
-	}*/
 }
 
 void neuralNet::trainNet(prmFile prm, csvParser csv_data)
@@ -162,6 +166,10 @@ vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex
 		monthsPushed++;
 	}
 	
+	if(inputs.size() != prm.nodesPerLayer[0])
+	{
+		inputs.clear();
+	}
 	return inputs;
 }
 
@@ -170,21 +178,13 @@ vector<double> neuralNet::calculateGuessError(csvParser csv_data, prmFile prm, i
 	vector<double> error;
 
 	vector<int> desired = classify(yearIndex, csv_data, prm);
-
-	//Should have to vectors with 3 ints each which are all 0's or 1's
-	//such as 001 and 110 and then it is XOR to give us a total error
-	//of 3
 	
 	int size = net.size() - 1;
 
 	for(unsigned int i = 0; i < net[size].size(); i++)
 	{
-		//TODO:Make sure this works
-		//Changed this from XOR
 		double test = desired[i] - net[size][i].output;
 		error.push_back(test);	
-		cout << "Desired: " << desired[i] << " Output: " << net[size][i].output << endl;
-		cout << "TEST: " << test << endl;
 	}
 
 	return error;
@@ -195,9 +195,7 @@ void neuralNet::calculateOutputNodeError(vector<double> guessError,  int layer)
 {
 	for(unsigned int i = 0; i < net[layer].size(); i++)
 	{
-		cout << "BEFORE Output Error: " << net[layer][i].error << endl;
 		net[layer][i].error = (net[layer][i].output * (1 - net[layer][i].output) * guessError[i]);
-		cout << "AFTER Output Error: " << net[layer][i].error << endl;
 	}
 }
 
@@ -208,22 +206,16 @@ void neuralNet::calculateHiddenNodeError(int layer)
 	for(unsigned int node = 0; node < net[layer].size(); node++)
 	{
 		float summation = 0;
-	
-		//cout << "BEFORE Error: " << net[layer][node].error << endl;
 			
 		for(unsigned int k = 0; k < net[layer + 1].size(); k++)
 		{
-			cout << "Weights: " << wts.weights[layer][node][k] << endl;
-			cout << "Error: " << net[layer + 1][k].error << endl;
 			summation += wts.weights[layer][node][k] * net[layer + 1][k].error;			
 		}		
 
 		float yj = net[layer][node].output;		
 		
 		net[layer][node].error = yj * (1 - yj) * summation;
-		//cout << "Summation: " << summation << endl;
-		//cout << "YJ: " << yj << endl;
-		//cout << "AFTER Error: " << net[layer][node].error << endl;
+
 	}
 }
 
@@ -238,9 +230,8 @@ void neuralNet::learningRule(int layer, prmFile prm)
 		// j iterates through nodes in layer-1
 		for(unsigned int j = 0; j < net[layer - 1].size(); j++)
 		{
-			//cout << "BEFORE LearningRate: " << prm.learningRate << " Node Output: " << net[layer-1][j].output << " Error: " << net[layer][i].error << endl;
 			wts.weights[layer - 1][j][i] += prm.learningRate * net[layer - 1][j].output * net[layer][i].error;
-			//cout << "AFTER LearningRate: " << prm.learningRate << " Node Output: " << net[layer-1][j].output << " Error: " << net[layer][i].error << endl;
+
 		}	
 	}
 }
@@ -249,8 +240,6 @@ void neuralNet::learningRule(int layer, prmFile prm)
 vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 {
 	vector<int> classified;
-
-	cout << "AcresBurned: " << csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre << " Range: " << prm.range[0] << " " << prm.range[1] << " YearIndex: " << yearIndex << endl;
 	
 	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre < prm.range[0])
 	{
@@ -260,7 +249,6 @@ vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 		//push back
 		vector<int> temp(arr, arr+3);
 		classified = temp;
-		cout << "Classified1: " << classified[0] << classified[1] << classified[2] << endl;
 	}	
 
 	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre > prm.range[0] && csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre   < prm.range[1])
@@ -268,7 +256,6 @@ vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 		int arr[] = {0,1,0};
 		vector<int> temp(arr, arr+3);
 		classified = temp;
-		cout << "Classified2: " << classified[0] << classified[1] << classified[2] << endl;
 	}
 
 	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre > prm.range[1])
@@ -276,7 +263,6 @@ vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 		int arr[] = {0,0,1};
 		vector<int> temp(arr, arr+3);
 		classified = temp;
-		cout << "Classified3: " << classified[0] << classified[1] << classified[2] << endl;
 	}
 
 	return classified;
