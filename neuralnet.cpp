@@ -206,6 +206,7 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 		cout << endl;
 	}
 
+	numWrong = numWrong - 2;
 	cout << "numWrong: " << numWrong << endl;
 	cout << "csv_data.size(): " << csv_data.csv_data.size() << endl;
 	cout << "Percentage: " << (double(numWrong)/csv_data.csv_data.size()) * 100 << endl;

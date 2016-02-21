@@ -39,4 +39,4 @@ prmFile.o: prmFile.cpp prmFile.h
 	$(CC) $(CFLAGS) prmFile.cpp prmFile.h
 
 clean:
-	rm *.gch *o *~ ANNtrain ANNtest CrossValidate
+	rm *.gch *o *~ *.wts ANNtrain ANNtest CrossValidate
