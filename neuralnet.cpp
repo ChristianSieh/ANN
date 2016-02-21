@@ -72,12 +72,6 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 			continue;
 
 		outputs.push_back(currentOutputs);
-		/*cout << "Output of layer " << layer << endl;
-		for(int i = 0; i < outputs[layer].size(); i++)
-		{
-			cout << outputs[layer][i] << ",  ";
-		}
-		cout << endl;*/
 	}
 }
 
@@ -85,13 +79,15 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 {
 	int i = 0;
 	float error = prm.threshold + 1;
+	
+
 	//float errorDifference;
 
 	//TODO: Add in errorDifference so if the error isn't getting
 	//lower then we quit
 	while(i < prm.epochs && error > prm.threshold)
 	{
-		//cout << "Epochs: " << i << endl;
+		cout << "Epochs: " << i << " ";
 	
 		vector<int> randomIndex;
 
@@ -103,16 +99,17 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 		random_shuffle(randomIndex.begin(), randomIndex.end());
 		//We now have our list of years to guess in random order
 
+		vector<double> guessError;
+
 		for(unsigned int j = 0; j < randomIndex.size(); j++)
 		{
 			propogatePerceptrons(prm, csv_data, randomIndex[j]);
-			
-			vector<double> guessError = calculateGuessError(csv_data, prm, randomIndex[j]);
-		
+					
 			for(unsigned int layer = net.size() - 1; layer > 0; layer--)
 			{
 				if(layer == net.size() - 1)
 				{
+					guessError = calculateGuessError(csv_data, prm, randomIndex[j]);
 					calculateOutputNodeError(guessError, layer);
 				}
 				else
@@ -123,9 +120,40 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 				learningRule(layer, prm);
 			}						
 		}
-
+		cout << networkError(prm, csv_data) << endl;
 		i++;
 	}
+}
+
+double neuralNet::networkError(prmFile prm, csvParser csv_data)
+{
+	vector<double> networkError;
+
+	for(unsigned int i = 0; i < csv_data.csv_data.size(); i++)
+	{
+		propogatePerceptrons(prm, csv_data, i);
+	
+		vector<double> guessError = calculateGuessError(csv_data, prm, i);
+
+		double temp;
+		for(int j = 0; j < guessError.size(); j++)
+		{
+			temp += guessError[j];
+		}
+		
+		networkError.push_back(temp / 3);
+	}
+
+	double summation = 0;
+
+	cout << endl;
+
+	for(int i = 0; i < networkError.size(); i++)
+	{
+		summation += pow(networkError[i], 2);
+	}
+
+	return summation / networkError.size();
 }
 
 void neuralNet::testNet()
