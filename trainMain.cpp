@@ -30,10 +30,10 @@ int main(int argc, char * argv[])
 		neuralNet net;
 
 		net.buildNet(prm);
-	
-		//net.propogatePerceptrons(prm, csv_data, 15);
-
+		
 		net.trainNet(prm, csv);
+
+		net.wts.WriteWeightsToFile(prm);
 
 		net.previousWts.PrintWeights();
 		net.wts.PrintWeights();

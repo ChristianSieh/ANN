@@ -26,7 +26,7 @@ class neuralNet
 	void propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex);
 	double networkError(prmFile prm, csvParser csv_data);
 	void trainNet(prmFile prm, csvParser csv_data);
-	void testNet();
+	void testNet(prmFile prm, csvParser csv_data);
 	void crossValidate();
 	vector<float> getInput(prmFile prm, csvParser csv_data, int yearIndex);
 	vector<double> calculateGuessError(csvParser csv_data, prmFile prm, int yearIndex);

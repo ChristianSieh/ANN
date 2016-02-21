@@ -17,14 +17,11 @@ int main(int argc, char * argv[])
 	prm.parsePrm(argv[1]);		
 	csv.parseCSV(prm.csvFileName.c_str());
 	
-	vector<PDSI> csv_data;
-	
-
 	neuralNet net;
 
 	net.buildNet(prm);
 
-	net.testNet();
+	net.testNet(prm, csv);
 	
 	return 0;
 }
