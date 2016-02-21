@@ -40,9 +40,15 @@ void Perceptron::ActivationFunction(vector<float> previous_output, Weights wts)
 	{
 		// i corresponds to the node num in previous node layer
 		x += previous_output[i] * wts.weights[layer-1][i][node];
+		//cout << "Previous Output: " << previous_output[i] << " Weight: " << wts.weights[layer-1][i][node] << endl;
 	}
 
 	output = 1.0 / (1.0 + exp(-x));
-//	cout << "Activation Output: " << output << endl;
+	//cout << "Activation Output: " << output << endl;
+	if(output == 0.5)
+	{
+		cout << "Previous Output Size: " << previous_output.size() << endl;
+		cout << "X: " << x << endl;
+	}
 }
 

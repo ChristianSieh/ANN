@@ -49,7 +49,13 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 			}
 			else
 			{
+				cout << "Outputs.size(): " << outputs.size() << endl;
+				cout << "Layer: " << layer << endl;
 				// Pass in [layer-1] which is the output of the prev layer
+				for(int i = 0; i < outputs[layer-1].size(); i++)
+				{
+					cout << "Output: " << outputs[layer-1][i] << endl;
+				}
 				net[layer][node].ActivationFunction(outputs[layer-1], wts);
 				currentOutputs.push_back(net[layer][node].output);
 				//cout << "Node Output: " << net[layer][node].output << " ";	
@@ -177,6 +183,7 @@ vector<double> neuralNet::calculateGuessError(csvParser csv_data, prmFile prm, i
 		//Changed this from XOR
 		double test = desired[i] - net[size][i].output;
 		error.push_back(test);	
+		cout << "Desired: " << desired[i] << " Output: " << net[size][i].output << endl;
 		cout << "TEST: " << test << endl;
 	}
 
