@@ -1,3 +1,15 @@
+/******************************************************************************
+* File:		prmFile.h
+*
+* Authors: 	Christian Sieh
+*
+* Description: 	This file contains a class definition for the class prmFile
+*		This class parses the parameter file format specified in the
+*		assignment
+*
+* Date: 	2/21/2016
+******************************************************************************/
+
 #ifndef _PRMFILE_H
 #define _PRMFILE_H
 
@@ -9,6 +21,14 @@
 
 using namespace std;
 
+/******************************************************************************
+* Class:	prmFile
+*
+* Description:	Class containing all of the data in the parameter file. This
+*		allows all of the nets configuration data to be contained in
+*		a single object.
+*	
+******************************************************************************/
 class prmFile
 {
 	public:

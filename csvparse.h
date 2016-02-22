@@ -1,3 +1,13 @@
+/******************************************************************************
+* File: 	csvparse.h
+*
+* Authors: 	Dylan Geyer
+*
+* Description: 	Contains class and struct definitions for the csvParse class.
+*
+* Date: 	2/21/2016
+******************************************************************************/
+
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -10,22 +20,14 @@ using namespace std;
 #ifndef CVPARSE_H
 #define CVPARSE_H
 
-enum MONTHS
-{
-	JANUARY,
-	FEBRUARY,
-	MARCH,
-	APRIL,
-	MAY,
-	JUNE,
-	JULY,
-	AUGUST,
-	SEPTEMBER,
-	OCTOBER,
-	NOVEMBER,
-	DECEMBER
-};
-
+/******************************************************************************
+* Struct:	PDSI
+*
+* Description:	This struct simply packages all of the data types found in the
+*		comma separated value file used in csvParser. Each years data
+*		is put together to create on PDSI object.
+*	
+******************************************************************************/
 struct PDSI
 {
 	int Year;
@@ -33,6 +35,13 @@ struct PDSI
 	float DroughtIndex[12];
 };
 
+/******************************************************************************
+* Class:	csvParser
+*
+* Description:	This class will extract the data stored in a comma separated
+*		value file, specificaly one containing PDSI data.
+*	
+******************************************************************************/
 class csvParser
 {
 	public:

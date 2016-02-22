@@ -1,15 +1,57 @@
+/******************************************************************************
+* File: 	csvparse.cpp
+*
+* Authors: 	Dylan Geyer
+*
+* Description: 	This file contains the class implementation of csvParser. It
+*		implements the constructor/destructor, and the functions 
+*		parseCSV, normalizePDSI, and setParam.
+*
+* Date: 	2/21/2016
+******************************************************************************/
+
 #include "csvparse.h"
 
+/******************************************************************************
+* Function: 	csvParser
+*
+* Description:	constructor for the class csvParser. Currently empty.
+*
+* Parameters:	none
+*	
+* Returns:	none
+******************************************************************************/
 csvParser::csvParser()
 {
 
 }
 
+/******************************************************************************
+* Function: 	~csvParser
+*
+* Description: 	destructor for the class csvParser, currently empty.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
 csvParser::~csvParser()
 {
 
 }
 
+/******************************************************************************
+* Function:	parseCSV
+*
+* Description:	This functions takes a comma separated value filename and
+*		parses the data contained inside. It assumes any line that
+*		begins with a digit 0-9 is a data line containing a Year,
+*		BurnedAcreage, and 12 PDSI values.
+*
+* Parameters:	filename - cstring containing the csv files name
+*
+* Returns:	none
+******************************************************************************/
 void csvParser::parseCSV(const char * filename)
 {
 
@@ -40,6 +82,19 @@ void csvParser::parseCSV(const char * filename)
 	normalizePDSI();
 }
 
+/******************************************************************************
+* Function:	normalizePDSI
+*
+* Description:	This function will look through the csv data and normalize the
+*		burned acreage values to 0->1 and all of the PDSI data to 0->1.
+*		The maximum burned acreage is saved so that the real burned
+*		acreage can be extracted from the 0->1 value since it is just
+*		expressed as a percent of the maximum value.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
 void csvParser::normalizePDSI()
 {
 	//Find max and min acres burned
@@ -90,6 +145,18 @@ void csvParser::normalizePDSI()
 	}
 }
 
+/******************************************************************************
+* Function:	setParam
+*
+* Description:	This function will assign the value in n to a different field
+*		int the PDSI object depending on what value is in index.
+*
+* Parameters:	tmp - PDSI object that will have some field set
+*		n - value to be placed in the PDSI object
+*		index - number indicating which field of PDSI to be set
+*
+* Returns:	none
+******************************************************************************/
 void csvParser::setParam(PDSI & tmp, double n, int index)
 {
 	switch(index)

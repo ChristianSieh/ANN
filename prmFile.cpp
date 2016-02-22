@@ -1,11 +1,40 @@
+/******************************************************************************
+* File: 	prmFile.cpp
+*
+* Authors: 	Christian Sieh
+*
+* Description: 	This file contains the implementation of the class prmFile.
+*		There are two functions, parsePrm and the helper function split.
+*
+* Date: 	2/21/2016
+******************************************************************************/
+
 #include "prmFile.h"
 
 using namespace std;
 
+/******************************************************************************
+* Function:	prmFile
+*
+* Description:	Constructor for prmFile class, unsued.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
 prmFile::prmFile(void)
 {
 };
 
+/******************************************************************************
+* Function:	~prmFile
+*
+* Description:	Destructor for prmFile class, unused.
+*
+* Parameters:	
+*
+* Returns:	
+******************************************************************************/
 prmFile::~prmFile(void)
 {
 };
@@ -20,6 +49,15 @@ vector<string> split(const string &s, char delim) {
 	return elems;
 }
 
+/******************************************************************************
+* Function:	
+*
+* Description:	
+*
+* Parameters:	
+*
+* Returns:	
+******************************************************************************/
 void prmFile::parsePrm(string prmFileName)
 {
 	vector<string> parameters;
