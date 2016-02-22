@@ -86,9 +86,7 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 	//TODO: Add in errorDifference so if the error isn't getting
 	//lower then we quit
 	while(i < prm.epochs && error > prm.threshold)
-	{
-		//cout << "Epochs: " << i << " ";
-	
+	{	
 		vector<int> randomIndex;
 
 		for(unsigned int j = 0; j < csv_data.csv_data.size(); j++)
@@ -121,7 +119,7 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 			}						
 		}
 		if(i % 10 == 0)
-			cout << networkError(prm, csv_data) << endl;
+			cout << "Epoch: " << i << "   " << networkError(prm, csv_data) << endl;
 
 		i++;
 	}
@@ -138,7 +136,7 @@ double neuralNet::networkError(prmFile prm, csvParser csv_data)
 		vector<double> guessError = calculateGuessError(csv_data, prm, i);
 
 		double temp;
-		for(int j = 0; j < guessError.size(); j++)
+		for(unsigned int j = 0; j < guessError.size(); j++)
 		{
 			temp += guessError[j];
 		}
@@ -148,9 +146,7 @@ double neuralNet::networkError(prmFile prm, csvParser csv_data)
 
 	double summation = 0;
 
-	cout << endl;
-
-	for(int i = 0; i < networkError.size(); i++)
+	for(unsigned int i = 0; i < networkError.size(); i++)
 	{
 		summation += pow(networkError[i], 2);
 	}
@@ -162,7 +158,9 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 {
 	int numWrong = 0;
 
-	for(int i = 0; i < csv_data.csv_data.size(); i++)
+	cout << "Sample,  Desired, Actual " << endl;
+
+	for(unsigned int i = 0; i < csv_data.csv_data.size(); i++)
 	{
 		vector<int> guess;
 		
@@ -170,43 +168,48 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 
 		int size = net.size() - 1;
 
-		for(int j = 0; j < net[size].size(); j++)
+		for(unsigned int j = 0; j < net[size].size(); j++)
 		{
 			guess.push_back(round(net[size][j].output));
 		}
 
 		vector<int> desired = classify(i, csv_data, prm);
-
-		for(int j = 0; j < desired.size(); j++)
+		
+		if(i !=0 && i != 1)
 		{
-			cout << desired[j];
-		}
+			cout << i-2 << ", ";
 
-		cout << ", ";
-
-		for(int j = 0; j < desired.size(); j++)
-		{
-			cout << guess[j];
-		}
-	
-		bool incorrect = false;
-
-		for(int j = 0; j < desired.size(); j++)
-		{
-			if(desired[j] != guess[j] && incorrect != true)
+			for(unsigned int j = 0; j < desired.size(); j++)
 			{
-				incorrect = true;
-				numWrong++;				
+				cout << desired[j];
 			}
-		}
+
+			cout << ", ";
+
+			for(unsigned int j = 0; j < desired.size(); j++)
+			{
+				cout << guess[j];
+			}
 	
-		if(incorrect)
-			cout << '*';
+			bool incorrect = false;
+
+			for(unsigned int j = 0; j < desired.size(); j++)
+			{
+				if(desired[j] != guess[j] && incorrect != true)
+				{
+					incorrect = true;
+					numWrong++;				
+				}
+			}
+	
+			if(incorrect)
+				cout << '*';
 			
-		cout << endl;
+			cout << endl;
+		}
 	}
 
-	numWrong = numWrong - 2;
+	//numWrong = numWrong - 2;
 	cout << "numWrong: " << numWrong << endl;
 	cout << "csv_data.size(): " << csv_data.csv_data.size() << endl;
 	cout << "Percentage: " << (double(numWrong)/csv_data.csv_data.size()) * 100 << endl;
@@ -245,7 +248,7 @@ vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex
 		monthsPushed++;
 	}
 	
-	if(inputs.size() != prm.nodesPerLayer[0])
+	if(inputs.size() != unsigned (prm.nodesPerLayer[0]))
 	{
 		inputs.clear();
 	}

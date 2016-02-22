@@ -35,8 +35,8 @@ int main(int argc, char * argv[])
 
 		net.wts.WriteWeightsToFile(prm);
 
-		net.previousWts.PrintWeights();
-		net.wts.PrintWeights();
+		//net.previousWts.PrintWeights();
+		//net.wts.PrintWeights();
 	}
 
 	return 0;
