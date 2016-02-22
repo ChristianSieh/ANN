@@ -244,9 +244,13 @@ vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex
 			yearIndex--;
 		}
 
-		monthIndex = (monthIndex - 1) % 12;				
+		monthIndex = (monthIndex - 1) % 12;
 		monthsPushed++;
 	}
+	
+	//Push bias input to the input vector, this value is large because we always want
+	//bias node to output ~= 1.0
+	inputs.push_back(1);
 	
 	if(inputs.size() != unsigned (prm.nodesPerLayer[0]))
 	{

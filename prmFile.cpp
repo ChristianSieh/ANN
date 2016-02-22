@@ -81,4 +81,7 @@ void prmFile::parsePrm(string prmFileName)
 	{	
 		range.push_back(stoi(parameters[12+i]));	
 	}
+
+	// Add 1 to input layer so that a bias node is created
+	nodesPerLayer[0] += 1;
 }
