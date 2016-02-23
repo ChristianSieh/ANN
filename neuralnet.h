@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include "perceptron.h"
 #include "prmFile.h"
 #include "csvparse.h"

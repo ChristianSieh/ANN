@@ -41,12 +41,6 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 	{
 		return;
 	}
-	/*cout << "Input feature vector\n";
-	for(int i = 0; i < outputs[0].size(); i++)
-	{
-		cout << outputs[0][i] << ",  ";
-	}
-	cout << endl;*/
 
 	//All other layers need to take the previous layers output
 	for(unsigned int layer = 0; layer < net.size(); layer++)
@@ -57,16 +51,13 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 			if(layer == 0)
 			{
 				net[layer][node].ActivationFunction(outputs[layer], wts);
-				//cout << net[layer][node].output << " ";
 			}
 			else
 			{
 				net[layer][node].ActivationFunction(outputs[layer-1], wts);
 				currentOutputs.push_back(net[layer][node].output);
-				//cout << net[layer][node].output << " ";
 			}
 		}
-		//cout << endl;
 	
 		if(layer == 0)
 			continue;
@@ -95,7 +86,7 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 		}
 
 		random_shuffle(randomIndex.begin(), randomIndex.end());
-		//We now have our list of years to guess in random order
+		//We now have our list of years to guess in random order	
 
 		vector<double> guessError;
 
@@ -118,8 +109,10 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 				learningRule(layer, prm);
 			}						
 		}
-		if(i % 10 == 0)
-			cout << "Epoch: " << i << "   " << networkError(prm, csv_data) << endl;
+		//if(i % 10 == 0)
+			error = networkError(prm, csv_data);
+			error = sqrt(error);
+			cout << "Epoch: " << i << "   " << setprecision(3) << error << endl;
 
 		i++;
 	}
@@ -135,22 +128,26 @@ double neuralNet::networkError(prmFile prm, csvParser csv_data)
 	
 		vector<double> guessError = calculateGuessError(csv_data, prm, i);
 
-		double temp;
+		double temp = 0;
 		for(unsigned int j = 0; j < guessError.size(); j++)
 		{
-			temp += guessError[j];
+			//cout << "Guess Error" << j << ": " << guessError[j] << endl;
+			temp += abs(guessError[j]);
 		}
-		
-		networkError.push_back(temp / 3);
+		//cout << "temp: " << temp << endl;	
+		networkError.push_back(temp / guessError.size());
 	}
 
 	double summation = 0;
 
 	for(unsigned int i = 0; i < networkError.size(); i++)
 	{
+		//cout << "Network Error[i]: " << networkError[i] << endl;
 		summation += pow(networkError[i], 2);
 	}
 
+	//cout << "Summation: " << summation << endl;
+	
 	return summation / networkError.size();
 }
 
@@ -244,7 +241,10 @@ vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex
 			yearIndex--;
 		}
 
-		monthIndex = (monthIndex - 1) % 12;
+		monthIndex--;
+		if(monthIndex < 0)
+			monthIndex = 11;
+
 		monthsPushed++;
 	}
 	
@@ -323,6 +323,7 @@ void neuralNet::learningRule(int layer, prmFile prm)
 }
 
 //TODO: Make it so range can be dynamic
+// Use loop for range
 vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 {
 	vector<int> classified;
