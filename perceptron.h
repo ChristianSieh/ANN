@@ -1,3 +1,12 @@
+/******************************************************************************
+* Class:	Perceptron.h
+*
+* Description:	Class containing the code to build and run the net based off
+*				the data from the csv file, and parameter file.
+*	
+* Date: 2/23/2016
+******************************************************************************/
+
 #ifndef _PERCEPTRON_H
 #define _PERCEPTRON_H
 

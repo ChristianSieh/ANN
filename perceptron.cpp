@@ -1,12 +1,43 @@
+/******************************************************************************
+* File: 	percepton.cpp
+*
+* Authors:  
+*
+* Description: 	This file contains the implementation of perceptron. It
+*		implements the constructor/destructor, and the activation function.
+*
+* Date: 	2/21/2016
+******************************************************************************/
+
 #include "perceptron.h"
 #include "weights.h"
 
 using namespace std;
 
+/******************************************************************************
+* Function:	Perceptron
+*
+* Description:	Constructor for percepton class, unsued.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
+
 Perceptron::Perceptron(void)
 {
 
 }
+
+/******************************************************************************
+* Function:	~Perceptron
+*
+* Description:	Deconstructor for percepton class, unsued.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
 
 Perceptron::~Perceptron(void)
 {

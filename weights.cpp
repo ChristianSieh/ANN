@@ -1,16 +1,59 @@
+/******************************************************************************
+* File:		weights.cpp
+*
+* Authors: 	Christian Sieh
+*
+* Description: 	This file contains a class definition for the class weights.
+*		This class contains 4 functions, CreateWeights, ReadWeightsFromFile, 
+*		WriteWeightsToFile, and the helper function WeightsSetUp.
+*
+* Date: 	2/21/2016
+******************************************************************************/
+
 #include "weights.h"
 
 using namespace std;
+
+/******************************************************************************
+* Function:	weights
+*
+* Description:	Constructor for weights class, unsued.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
 
 Weights::Weights()
 {
 
 }
 
+/******************************************************************************
+* Function:	~Weights
+*
+* Description:	Constructor for weights class, unsued.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
+
 Weights::~Weights()
 {
 
 }
+
+/******************************************************************************
+* Function:	WeightsSetUp
+*
+* Description:	Tests to see if the file exists to read from.  If not then calls
+*				CreateWeights to create a new file and generate file.
+*
+* Parameters:	prmFile prm
+*
+* Returns:	none
+******************************************************************************/
 
 void Weights::WeightsSetUp(prmFile prm)
 {
@@ -27,6 +70,17 @@ void Weights::WeightsSetUp(prmFile prm)
 		CreateWeights(prm);
 	}
 }
+
+/******************************************************************************
+* Function:	ReadWeightsFromFile
+*
+* Description:	Opens the wts file and reads the weights into a 2d vector 
+*               of doubles.
+*
+* Parameters:	prmFile params
+*
+* Returns:	weight_layer
+******************************************************************************/
 
 void Weights::ReadWeightsFromFile(prmFile params)
 {
@@ -56,6 +110,16 @@ void Weights::ReadWeightsFromFile(prmFile params)
 	fin.close();
 }
 
+/******************************************************************************
+* Function:	WriteWeightsToFile
+*
+* Description:	Writes the weights to the wts file.
+*
+* Parameters:	prmFile params, vector weights
+*
+* Returns:	none
+******************************************************************************/
+
 void Weights::WriteWeightsToFile(prmFile params)
 {
 	ofstream fout;
@@ -82,6 +146,16 @@ void Weights::WriteWeightsToFile(prmFile params)
 	fout.close();
 }
 
+/******************************************************************************
+* Function:	CreateWeights
+*
+* Description:	Creates new weights between -.1 and .1 saves it in a 2d vector.
+*
+* Parameters:	prmFile params
+*
+* Returns:	weight_layer
+******************************************************************************/
+
 void Weights::CreateWeights(prmFile params)
 {
 	srand(time(NULL));
@@ -106,6 +180,7 @@ void Weights::CreateWeights(prmFile params)
 	}
 }
 
+/*
 void Weights::PrintWeights()
 {
 	for(unsigned int i = 0; i < weights.size(); i++)
@@ -121,7 +196,7 @@ void Weights::PrintWeights()
 		}
 		cout << endl;
 	}
-}
+}*/
 
 
 

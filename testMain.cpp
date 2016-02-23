@@ -12,16 +12,23 @@ using namespace std;
 
 int main(int argc, char * argv[])
 {
-	prmFile prm;
-	csvParser csv;
-	prm.parsePrm(argv[1]);		
-	csv.parseCSV(prm.csvFileName.c_str());
-	
-	neuralNet net;
+	if(argc < 2)
+	{
+		cout << "USAGE: ANNtest parameterFile" << endl;
+	}
+	else
+	{
+		prmFile prm;
+		csvParser csv;
+		prm.parsePrm(argv[1]);		
+		csv.parseCSV(prm.csvFileName.c_str());
+		
+		neuralNet net;
 
-	net.buildNet(prm);
+		net.buildNet(prm);
 
-	net.testNet(prm, csv);
+		net.testNet(prm, csv);
+	}
 	
 	return 0;
 }

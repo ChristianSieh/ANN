@@ -1,3 +1,14 @@
+/******************************************************************************
+* File:		weights.h
+*
+* Authors: 	Jason Anderson
+*
+* Description: 	This file contains a class definition for the class weights.
+*		This class reads and writes the weights needed for the ANN.
+*
+* Date: 	2/23/2016
+******************************************************************************/
+
 #ifndef _TESTWEIGHTS_H
 #define _TESTWEIGHTS_H
 
@@ -11,6 +22,14 @@
 #include "prmFile.h"
 
 using namespace std;
+
+/******************************************************************************
+* Class:	Weights
+*
+* Description:	Class containing the code for implementing the use and storage
+*				of weights.
+*	
+******************************************************************************/
 
 class Weights
 {

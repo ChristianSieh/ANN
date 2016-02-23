@@ -1,14 +1,55 @@
+/******************************************************************************
+* File: 	neuralnet.cpp
+*
+* Authors: 	Jason Anderson, Dylan Geyer, and Christian Sieh
+*
+* Description: 	This file contains the implementation of neuralnet. It
+*		implements the constructor/destructor, and its associated functions.
+*
+* Date: 	2/21/2016
+******************************************************************************/
+
 #include "neuralnet.h"
 
 using namespace std;
+
+/******************************************************************************
+* Function:	neuralNet
+*
+* Description:	Constructor for neuralNet class, unsued.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
 
 neuralNet::neuralNet(void)
 {
 };
 
+/******************************************************************************
+* Function:	~neuralNet
+*
+* Description:	Deconstructor for neuralNet class, unsued.
+*
+* Parameters:	none
+*
+* Returns:	none
+******************************************************************************/
+
 neuralNet::~neuralNet(void)
 {
 };
+
+/******************************************************************************
+* Function:	buildNet
+*
+* Description:	Creates the net.
+*
+* Parameters:	prmFile prm, weights from the wts file.
+*
+* Returns:	none
+******************************************************************************/
 
 void neuralNet::buildNet(prmFile prm)
 {
@@ -31,6 +72,15 @@ void neuralNet::buildNet(prmFile prm)
 	previousWts = wts;
 }
 
+/******************************************************************************
+* Function:	propogatePerceptrons
+*
+* Description:	TODO
+*
+* Parameters:	prmFile prm, csvParser csv_data, int yearIndex
+*
+* Returns:	none
+******************************************************************************/
 
 void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex)
 {
@@ -65,6 +115,16 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 		outputs.push_back(currentOutputs);
 	}
 }
+
+/******************************************************************************
+* Function:	trainNet
+*
+* Description:	Trains the net.
+*
+* Parameters:	prmFile prm, csvParser csv_data
+*
+* Returns:	none
+******************************************************************************/
 
 void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 {
@@ -119,6 +179,16 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 	}
 }
 
+/******************************************************************************
+* Function:	networkError
+*
+* Description:	Calculates the network error.
+*
+* Parameters:	prmFile prm, csvParser csv_data
+*
+* Returns:	summation / networkError.size()
+******************************************************************************/
+
 double neuralNet::networkError(prmFile prm, csvParser csv_data)
 {
 	vector<double> networkError;
@@ -151,6 +221,16 @@ double neuralNet::networkError(prmFile prm, csvParser csv_data)
 	
 	return summation / networkError.size();
 }
+
+/******************************************************************************
+* Function:	testNet
+*
+* Description:	Tests the net.
+*
+* Parameters:	prmFile prm, csvParser csv_data
+*
+* Returns:	none
+******************************************************************************/
 
 void neuralNet::testNet(prmFile prm, csvParser csv_data)
 {
@@ -211,6 +291,17 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 	cout << "csv_data.size(): " << csv_data.csv_data.size() << endl;
 	cout << "Percentage: " << 100 - ((double(numWrong)/csv_data.csv_data.size()) * 100) << endl;
 }
+
+/******************************************************************************
+* Function:	crossValidate
+*
+* Description:	Cross Validates the data in the file.  Takes 1 year of data out,
+*				trains it on the rest, then tests it on the year taken out.
+*
+* Parameters:	prmFile prm, csvParser csv_data
+*
+* Returns:	none
+******************************************************************************/
 
 void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 {
@@ -304,6 +395,15 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 	cout << "Percentage: " << 100 - ((double(numWrong)/csv_data.csv_data.size())*100) << endl;
 }
 
+/******************************************************************************
+* Function:	getInput
+*
+* Description:	Gets the inputs from the csv file.
+*
+* Parameters:	prmFile prm, csvParser csv_data, int yearIndex
+*
+* Returns:	none
+******************************************************************************/
 
 vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex)
 {
@@ -346,6 +446,16 @@ vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex
 	return inputs;
 }
 
+/******************************************************************************
+* Function:	calculateGuessError
+*
+* Description:	calculates the guess error.
+*
+* Parameters:	csvParser csv_data, prmFile prm, int yearIndex
+*
+* Returns:	vector<double> error
+******************************************************************************/
+
 vector<double> neuralNet::calculateGuessError(csvParser csv_data, prmFile prm, int yearIndex)
 {
 	vector<double> error;
@@ -363,6 +473,16 @@ vector<double> neuralNet::calculateGuessError(csvParser csv_data, prmFile prm, i
 	return error;
 }
 
+/******************************************************************************
+* Function:	calculateOutputNodeError
+*
+* Description:	calculates the output node error.
+*
+* Parameters:	vector<double> guessError,  int layer
+*
+* Returns:	none
+******************************************************************************/
+
 //Delta(k)
 void neuralNet::calculateOutputNodeError(vector<double> guessError,  int layer)
 {
@@ -371,6 +491,16 @@ void neuralNet::calculateOutputNodeError(vector<double> guessError,  int layer)
 		net[layer][i].error = (net[layer][i].output * (1 - net[layer][i].output) * guessError[i]);
 	}
 }
+
+/******************************************************************************
+* Function:	calculateOutputNodeError
+*
+* Description:	calculates the hidden node error.
+*
+* Parameters:	int layer
+*
+* Returns:	none
+******************************************************************************/
 
 //Delta(j)
 void neuralNet::calculateHiddenNodeError(int layer)
@@ -392,6 +522,16 @@ void neuralNet::calculateHiddenNodeError(int layer)
 	}
 }
 
+/******************************************************************************
+* Function:	learning rule
+*
+* Description:	Implements the neural net learning rule.
+*
+* Parameters:	int layer, prmFile prm
+*
+* Returns:	none
+******************************************************************************/
+
 //Given a layer it should adjust the weights between the given layer and the previous layer.
 //For node k in layer iterate through all the weights from k through all the nodes in layer j (the previous layer).
 //
@@ -408,6 +548,16 @@ void neuralNet::learningRule(int layer, prmFile prm)
 		}	
 	}
 }
+
+/******************************************************************************
+* Function:	classify
+*
+* Description:	classifies the year to the output nodes in the neural net.
+*
+* Parameters:	int yearIndex, csvParser csv, prmFile prm
+*
+* Returns:	classified
+******************************************************************************/
 
 //TODO: Make it so range can be dynamic
 // Use loop for range
