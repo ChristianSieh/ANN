@@ -109,11 +109,12 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 				learningRule(layer, prm);
 			}						
 		}
-		//if(i % 10 == 0)
+		if(i % 10 == 0)
+		{
 			error = networkError(prm, csv_data);
 			error = sqrt(error);
 			cout << "Epoch: " << i << "   " << setprecision(3) << error << endl;
-
+		}
 		i++;
 	}
 }
@@ -206,15 +207,101 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 		}
 	}
 
-	//numWrong = numWrong - 2;
 	cout << "numWrong: " << numWrong << endl;
 	cout << "csv_data.size(): " << csv_data.csv_data.size() << endl;
-	cout << "Percentage: " << (double(numWrong)/csv_data.csv_data.size()) * 100 << endl;
+	cout << "Percentage: " << 100 - ((double(numWrong)/csv_data.csv_data.size()) * 100) << endl;
 }
 
-void neuralNet::crossValidate()
+void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 {
+	int i = 0;
+	int numWrong = 0;
+	float error = prm.threshold + 1;
+	
+	cout << "Sample, Desired, Actual" << endl;
 
+	for(unsigned int j = 0; j < csv_data.csv_data.size(); j++)
+	{
+		while(i < prm.epochs && error > prm.threshold)
+		{
+			vector<int> randomIndex;
+			
+			for(unsigned int k = 0; k < csv_data.csv_data.size(); k++)
+			{
+				if(k != j)
+					randomIndex.push_back(k);
+			}
+
+			random_shuffle(randomIndex.begin(), randomIndex.end());
+
+			vector<double> guessError;
+
+			for(unsigned int k = 0; k < randomIndex.size(); k++)
+			{
+				propogatePerceptrons(prm, csv_data, randomIndex[k]);
+				
+				for(unsigned int layer = net.size() - 1; layer > 0; layer--)
+				{
+					if(layer == net.size() - 1)
+					{
+						guessError = calculateGuessError(csv_data, prm, randomIndex[k]);
+						calculateOutputNodeError(guessError, layer);
+					}
+					else
+					{
+						calculateHiddenNodeError(layer);
+					}
+					learningRule(layer, prm);
+				}
+			}
+			i++;
+		}
+		
+		vector<int> guess;
+		propogatePerceptrons(prm, csv_data, j);
+		int size = net.size() - 1;
+
+		for(unsigned int l = 0; l < net[size].size(); l++)
+		{
+			guess.push_back(round(net[size][l].output));
+		}
+
+		vector<int> desired = classify(j, csv_data, prm);
+
+		cout << j << ", ";
+
+		for(unsigned int l = 0; l < desired.size(); l++)
+		{
+			cout << desired[l];
+		}
+
+		cout << ", ";
+
+		for(unsigned int l = 0; l < desired.size(); l++)
+		{
+			cout << guess[l];
+		}
+	
+		bool incorrect = false;
+
+		for(unsigned int l = 0; l < desired.size(); l++)
+		{
+			if(desired[l] != guess[l] && incorrect != true)
+			{
+				incorrect = true;
+				numWrong++;
+			}
+		}
+
+		if(incorrect)
+			cout << "*";
+	
+		cout << endl;
+		i = 0;
+	}
+	cout << "numWrong: " << numWrong << endl;
+	cout << "csv_data.size(): " << csv_data.csv_data.size() << endl;
+	cout << "Percentage: " << 100 - ((double(numWrong)/csv_data.csv_data.size())*100) << endl;
 }
 
 

@@ -28,7 +28,7 @@ class neuralNet
 	double networkError(prmFile prm, csvParser csv_data);
 	void trainNet(prmFile prm, csvParser csv_data);
 	void testNet(prmFile prm, csvParser csv_data);
-	void crossValidate();
+	void crossValidate(prmFile prm, csvParser csv_data);
 	vector<float> getInput(prmFile prm, csvParser csv_data, int yearIndex);
 	vector<double> calculateGuessError(csvParser csv_data, prmFile prm, int yearIndex);
 	void calculateOutputNodeError(vector<double> guessError, int layer);
