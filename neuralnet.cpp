@@ -558,37 +558,41 @@ void neuralNet::learningRule(int layer, prmFile prm)
 *
 * Returns:	classified
 ******************************************************************************/
-
-//TODO: Make it so range can be dynamic
-// Use loop for range
 vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 {
 	vector<int> classified;
+	bool isClassified = false;
+	unsigned int i = 0;
+
+	while(i < prm.range.size() && isClassified == false)
+	{
+		if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre < prm.range[i])
+		{
+			for(unsigned int j = 0; j <= prm.range.size(); j++)
+			{
+				if(j == i)
+					classified.push_back(1);
+				else
+					classified.push_back(0);
+			}
+			isClassified = true;
+		}
+
+		if(i == prm.range.size()- 1 && csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre > prm.range[i])
+		{
+			for(unsigned int j = 0; j <= prm.range.size(); j++)
+			{
+				if(j == i)
+					classified.push_back(1);
+				else
+					classified.push_back(0);
+			}		
+			isClassified = true;
+		}
 	
-	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre < prm.range[0])
-	{
-		int arr[] = {1,0,0};
-		//Using vector constructor to push 3 values at once
-		//might be an easier way to do this or just use
-		//push back
-		vector<int> temp(arr, arr+3);
-		classified = temp;
-	}	
-
-	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre > prm.range[0] && csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre   < prm.range[1])
-	{
-		int arr[] = {0,1,0};
-		vector<int> temp(arr, arr+3);
-		classified = temp;
+		i++;	
 	}
-
-	if(csv.csv_data[yearIndex].AcresBurned * csv.maxBurnedAcre > prm.range[1])
-	{
-		int arr[] = {0,0,1};
-		vector<int> temp(arr, arr+3);
-		classified = temp;
-	}
-
+	
 	return classified;
 }
 
