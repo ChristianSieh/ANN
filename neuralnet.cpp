@@ -302,6 +302,8 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 {
 	int i = 0;
 	int numWrong = 0;
+	int minimalData = false;
+	int minimalCount = 0;
 	float error = prm.threshold + 1;
 	
 	cout << "Sample, Desired, Actual" << endl;
@@ -344,7 +346,7 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 		}
 		
 		vector<int> guess;
-		propogatePerceptrons(prm, csv_data, j);
+		minimalData = propogatePerceptrons(prm, csv_data, j);
 		int size = net.size() - 1;
 
 		for(unsigned int l = 0; l < net[size].size(); l++)
@@ -354,35 +356,40 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 
 		vector<int> desired = classify(j, csv_data, prm);
 
-		cout << j << ", ";
-
-		for(unsigned int l = 0; l < desired.size(); l++)
+		if(!minimalData)
 		{
-			cout << desired[l];
-		}
+			cout << j << ", ";
 
-		cout << ", ";
-
-		for(unsigned int l = 0; l < desired.size(); l++)
-		{
-			cout << guess[l];
-		}
-	
-		bool incorrect = false;
-
-		for(unsigned int l = 0; l < desired.size(); l++)
-		{
-			if(desired[l] != guess[l] && incorrect != true)
+			for(unsigned int l = 0; l < desired.size(); l++)
 			{
-				incorrect = true;
-				numWrong++;
+				cout << desired[l];
 			}
-		}
 
-		if(incorrect)
-			cout << "*";
+			cout << ", ";
+
+			for(unsigned int l = 0; l < desired.size(); l++)
+			{
+				cout << guess[l];
+			}
 	
-		cout << endl;
+			bool incorrect = false;
+
+			for(unsigned int l = 0; l < desired.size(); l++)
+			{
+				if(desired[l] != guess[l] && incorrect != true)
+				{
+					incorrect = true;
+					numWrong++;
+				}
+			}
+		
+			if(incorrect)
+				cout << "*";
+	
+			cout << endl;
+		}
+		else
+			minimalCount++;
 
 		i = 0;
 	}
