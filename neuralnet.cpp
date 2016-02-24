@@ -16,7 +16,7 @@ using namespace std;
 /******************************************************************************
 * Function:	neuralNet
 *
-* Description:	Constructor for neuralNet class, unsued.
+* Description:	Constructor for neuralNet class, unused.
 *
 * Parameters:	none
 *
@@ -30,7 +30,7 @@ neuralNet::neuralNet(void)
 /******************************************************************************
 * Function:	~neuralNet
 *
-* Description:	Deconstructor for neuralNet class, unsued.
+* Description:	Deconstructor for neuralNet class, unused.
 *
 * Parameters:	none
 *
@@ -82,14 +82,14 @@ void neuralNet::buildNet(prmFile prm)
 * Returns:	none
 ******************************************************************************/
 
-void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex)
+bool neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex)
 {
 	vector<vector<float> > outputs;
 	outputs.push_back(getInput(prm, csv_data, yearIndex));
 	
 	if(outputs[outputs.size()-1].size() == 0)
 	{
-		return;
+		return true;
 	}
 
 	//All other layers need to take the previous layers output
@@ -108,12 +108,14 @@ void neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 				currentOutputs.push_back(net[layer][node].output);
 			}
 		}
-	
+
+		//TODO: What is this for?	
 		if(layer == 0)
 			continue;
 
 		outputs.push_back(currentOutputs);
 	}
+	return false;
 }
 
 /******************************************************************************
@@ -130,12 +132,7 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 {
 	int i = 0;
 	float error = prm.threshold + 1;
-	
 
-	//float errorDifference;
-
-	//TODO: Add in errorDifference so if the error isn't getting
-	//lower then we quit
 	while(i < prm.epochs && error > prm.threshold)
 	{	
 		vector<int> randomIndex;
@@ -146,7 +143,6 @@ void neuralNet::trainNet(prmFile prm, csvParser csv_data)
 		}
 
 		random_shuffle(randomIndex.begin(), randomIndex.end());
-		//We now have our list of years to guess in random order	
 
 		vector<double> guessError;
 
@@ -202,10 +198,8 @@ double neuralNet::networkError(prmFile prm, csvParser csv_data)
 		double temp = 0;
 		for(unsigned int j = 0; j < guessError.size(); j++)
 		{
-			//cout << "Guess Error" << j << ": " << guessError[j] << endl;
 			temp += abs(guessError[j]);
 		}
-		//cout << "temp: " << temp << endl;	
 		networkError.push_back(temp / guessError.size());
 	}
 
@@ -213,11 +207,8 @@ double neuralNet::networkError(prmFile prm, csvParser csv_data)
 
 	for(unsigned int i = 0; i < networkError.size(); i++)
 	{
-		//cout << "Network Error[i]: " << networkError[i] << endl;
 		summation += pow(networkError[i], 2);
 	}
-
-	//cout << "Summation: " << summation << endl;
 	
 	return summation / networkError.size();
 }
@@ -235,6 +226,8 @@ double neuralNet::networkError(prmFile prm, csvParser csv_data)
 void neuralNet::testNet(prmFile prm, csvParser csv_data)
 {
 	int numWrong = 0;
+	bool minimalData = false;
+	int minimalCount = 0;
 
 	cout << "Sample,  Desired, Actual " << endl;
 
@@ -242,7 +235,7 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 	{
 		vector<int> guess;
 		
-		propogatePerceptrons(prm, csv_data, i);
+		minimalData = propogatePerceptrons(prm, csv_data, i);
 
 		int size = net.size() - 1;
 
@@ -252,10 +245,10 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 		}
 
 		vector<int> desired = classify(i, csv_data, prm);
-		
-		if(i !=0 && i != 1)
-		{
-			cout << i-2 << ", ";
+	
+		if(!minimalData)
+		{	
+			cout << i - minimalCount << ", ";
 
 			for(unsigned int j = 0; j < desired.size(); j++)
 			{
@@ -268,27 +261,29 @@ void neuralNet::testNet(prmFile prm, csvParser csv_data)
 			{
 				cout << guess[j];
 			}
-	
+
 			bool incorrect = false;
 
 			for(unsigned int j = 0; j < desired.size(); j++)
 			{
 				if(desired[j] != guess[j] && incorrect != true)
 				{
-					incorrect = true;
-					numWrong++;				
-				}
+				incorrect = true;
+				numWrong++;				
 			}
-	
+			}
+
 			if(incorrect)
 				cout << '*';
-			
+		
 			cout << endl;
 		}
+		else
+			minimalCount++;
 	}
 
 	cout << "numWrong: " << numWrong << endl;
-	cout << "csv_data.size(): " << csv_data.csv_data.size() << endl;
+	cout << "csv_data.size(): " << csv_data.csv_data.size() - minimalCount << endl;
 	cout << "Percentage: " << 100 - ((double(numWrong)/csv_data.csv_data.size()) * 100) << endl;
 }
 
@@ -388,6 +383,7 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 			cout << "*";
 	
 		cout << endl;
+
 		i = 0;
 	}
 	cout << "numWrong: " << numWrong << endl;
@@ -407,8 +403,6 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 
 vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex)
 {
-	//TODO: Check size of input vector and if to small then ignore that year	
-
 	vector<float> inputs;
 
 	for(int i = yearIndex; i > yearIndex - prm.yearsBurned && i >= 0; i--)

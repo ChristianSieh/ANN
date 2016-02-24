@@ -43,7 +43,7 @@ class neuralNet
 	~neuralNet();
 
 	void buildNet(prmFile prm);
-	void propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex);
+	bool propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIndex);
 	double networkError(prmFile prm, csvParser csv_data);
 	void trainNet(prmFile prm, csvParser csv_data);
 	void testNet(prmFile prm, csvParser csv_data);

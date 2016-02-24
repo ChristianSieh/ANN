@@ -60,7 +60,7 @@ void Perceptron::ActivationFunction(vector<float> previous_output, Weights wts)
 	if(layer < 1)
 	{
 		output = previous_output[node];
-			return;
+		return;
 	}
 
 	//Look at the weights of each output to calculate x = Sum(Wij * Yi) then
