@@ -31,14 +31,25 @@ prmFile::prmFile(void)
 *
 * Description:	Destructor for prmFile class, unused.
 *
-* Parameters:	
+* Parameters:	none
 *
-* Returns:	
+* Returns:	none
 ******************************************************************************/
 prmFile::~prmFile(void)
 {
 };
 
+/******************************************************************************
+* Function:	split
+*
+* Description:	This function breaks a long string into a vector of strings
+*		that has been tokenized on some defined delimiter.
+*
+* Parameters:	s - long string to be broken up
+*		delim - delimiter to define break points in the string
+*
+* Returns:	vector<string> - tokens found in string s
+******************************************************************************/
 vector<string> split(const string &s, char delim) {
 	stringstream ss(s);
 	string item;
@@ -50,13 +61,15 @@ vector<string> split(const string &s, char delim) {
 }
 
 /******************************************************************************
-* Function:	
+* Function:	parsePrm
 *
-* Description:	
+* Description:	Reads each line of a .prm file and stores the data into the
+*		data members of the class. This function is able to ignore
+*		comment lines and inline comments using the '#' character.
 *
-* Parameters:	
+* Parameters:	prmFileName - name of the parameter file
 *
-* Returns:	
+* Returns:	none
 ******************************************************************************/
 void prmFile::parsePrm(string prmFileName)
 {

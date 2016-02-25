@@ -1,7 +1,7 @@
 /******************************************************************************
 * File:		weights.h
 *
-* Authors: 	Jason Anderson
+* Authors: 	Dylan Geyer, Jason Anderson
 *
 * Description: 	This file contains a class definition for the class weights.
 *		This class reads and writes the weights needed for the ANN.

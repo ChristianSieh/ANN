@@ -1,3 +1,13 @@
+/******************************************************************************
+* File:		trainMain.cpp
+*
+* Authors: 	Dylan Geyer, Christian Sieh, Jason Anderson
+*
+* Description: 	This file uses the neural net class to back propogate and train
+*		the weights file.
+*
+* Date: 	2/21/2016
+******************************************************************************/
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -11,6 +21,17 @@
 
 using namespace std;
 
+/******************************************************************************
+* Function:	main
+*
+* Description:	Runs the neural network in training mode wich will update the
+*		values in the weights file.
+*
+* Parameters:	argc - number of command line arguments
+*		argv - array of c style strings containing command line args
+*
+* Returns:	status integer
+******************************************************************************/
 int main(int argc, char * argv[])
 {
 	prmFile prm;

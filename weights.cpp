@@ -1,7 +1,7 @@
 /******************************************************************************
 * File:		weights.cpp
 *
-* Authors: 	Christian Sieh
+* Authors: 	Dylan Geyer, Jason Anderson
 *
 * Description: 	This file contains a class definition for the class weights.
 *		This class contains 4 functions, CreateWeights, ReadWeightsFromFile, 
@@ -74,7 +74,7 @@ void Weights::WeightsSetUp(prmFile prm)
 /******************************************************************************
 * Function:	ReadWeightsFromFile
 *
-* Description:	Opens the wts file and reads the weights into a 2d vector 
+* Description:	Opens the wts file and reads the weights into a 3d vector 
 *               of doubles.
 *
 * Parameters:	prmFile params
@@ -171,6 +171,7 @@ void Weights::CreateWeights(prmFile params)
 			{
 				
 				double tmp;
+				// Best results using the range (-0.1 to +0.1)
 				tmp = -.1 + rand() / double(RAND_MAX / .2);
 				node_weights.push_back(tmp);
 			}

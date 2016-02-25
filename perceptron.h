@@ -2,7 +2,7 @@
 * Class:	Perceptron.h
 *
 * Description:	Class containing the code to build and run the net based off
-*				the data from the csv file, and parameter file.
+*		the data from the csv file, and parameter file.
 *	
 * Date: 2/23/2016
 ******************************************************************************/
@@ -16,6 +16,14 @@
 
 using namespace std;
 
+/******************************************************************************
+* Class:	Perceptron
+*
+* Description:	Contains the class definition for the Perceptron. This class
+*		only has one member function, ActivationFunction.
+*
+* Date:	2/23/2016
+******************************************************************************/
 class Perceptron
 {
 	public:

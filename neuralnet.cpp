@@ -75,7 +75,8 @@ void neuralNet::buildNet(prmFile prm)
 /******************************************************************************
 * Function:	propogatePerceptrons
 *
-* Description:	TODO
+* Description:	This function feeds forward through the entire net in order to
+*		obtain an output (guess).
 *
 * Parameters:	prmFile prm, csvParser csv_data, int yearIndex
 *
@@ -109,7 +110,7 @@ bool neuralNet::propogatePerceptrons(prmFile prm, csvParser csv_data, int yearIn
 			}
 		}
 
-		//TODO: What is this for?	
+		// Don't push the outputs of the input layer
 		if(layer == 0)
 			continue;
 
@@ -401,11 +402,11 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 /******************************************************************************
 * Function:	getInput
 *
-* Description:	Gets the inputs from the csv file.
+* Description:	Builds input feature vector from csv data.
 *
 * Parameters:	prmFile prm, csvParser csv_data, int yearIndex
 *
-* Returns:	none
+* Returns:	vector of floats the size of the input layer / feature vector)
 ******************************************************************************/
 
 vector<float> neuralNet::getInput(prmFile prm, csvParser csv_data, int yearIndex)
