@@ -309,8 +309,10 @@ void neuralNet::crossValidate(prmFile prm, csvParser csv_data)
 	
 	cout << "Sample, Desired, Actual" << endl;
 
+	//#pragma omp parallel for
 	for(unsigned int j = 0; j < csv_data.csv_data.size(); j++)
 	{
+		wts.CreateWeights(prm);
 		while(i < prm.epochs && error > prm.threshold)
 		{
 			vector<int> randomIndex;
@@ -584,7 +586,7 @@ vector<int> neuralNet::classify(int yearIndex, csvParser csv, prmFile prm)
 		{
 			for(unsigned int j = 0; j <= prm.range.size(); j++)
 			{
-				if(j == i)
+				if(j == i + 1)
 					classified.push_back(1);
 				else
 					classified.push_back(0);

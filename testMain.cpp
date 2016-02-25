@@ -39,6 +39,7 @@ int main(int argc, char * argv[])
 	{
 		prmFile prm;
 		csvParser csv;
+
 		prm.parsePrm(argv[1]);		
 		csv.parseCSV(prm.csvFileName.c_str());
 		

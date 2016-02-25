@@ -1,18 +1,19 @@
 # the compiler to use.
 CC=g++
-# Compiler Flages
-CFLAGS=-c -g -Wall -std=c++11
-
+# Compiler Flags
+CFLAGS=-c -Wall -std=c++11
+# Linker Flags
+LFLAGS=
 all: ANNtrain ANNtest CrossValidate
 
 ANNtrain: trainMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o
-	$(CC) trainMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o -o ANNtrain
+	$(CC) $(LFLAGS) trainMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o -o ANNtrain
 
 ANNtest: testMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o
-	$(CC) testMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o -o ANNtest
+	$(CC) $(LFLAGS) testMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o -o ANNtest
 
 CrossValidate: crossMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o
-	$(CC) crossMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o -o CrossValidate
+	$(CC) $(LFLAGS) crossMain.o csvparse.o neuralnet.o perceptron.o weights.o prmFile.o -o CrossValidate
 
 trainMain.o: trainMain.cpp
 	$(CC) $(CFLAGS) trainMain.cpp

@@ -49,8 +49,6 @@ int main(int argc, char * argv[])
 	else
 	{
 		prm.parsePrm(argv[1]);		
-	
-		vector<PDSI> csv_data;
 
 		csv.parseCSV(prm.csvFileName.c_str());
 	

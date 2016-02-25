@@ -159,7 +159,8 @@ void Weights::WriteWeightsToFile(prmFile params)
 void Weights::CreateWeights(prmFile params)
 {
 	srand(time(NULL));
-
+	if(weights.size()>  0)
+		weights.clear();
 	for(int i = 0; i < params.layers-1; i++)
 	{
 		vector<vector<double> > weight_layer;
